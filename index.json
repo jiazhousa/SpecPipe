@@ -1,0 +1,14 @@
+{
+  "skills": [
+    {
+      "name": "specpipe",
+      "version": "1.0.0",
+      "files": [
+        "SKILL.md",
+        "config.md",
+        "docs/quality-gate.md",
+        "docs/git-branch-guide.md"
+      ]
+    }
+  ]
+}

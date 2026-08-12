@@ -1,4 +1,4 @@
-# specpipe 配置（opencode 版）
+# specpipe 配置
 
 > 所有可配置项的默认值。**修改此文件即可定制工作流，无需改动 SKILL.md。**
 > builder 在进入工作流（S0 前）时用 read 工具加载本文件，用配置值替换 SKILL.md 中的 `{{key}}` 占位符。
