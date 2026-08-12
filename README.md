@@ -2,8 +2,6 @@
 
 基于 [opencode](https://opencode.ai) 的编码工作流 skill（spec 驱动流水线）。builder agent 自动驱动 **spec → impl → coding → 质量门** 全流程，用户只需在**访谈澄清、分级确认、审查不通过**时参与。需求按规模自动分流为 **Epic / Story / Issue** 三条路径。
 
-> 上游 [Unpained/coding-workflow](https://github.com/Unpained/coding-workflow)（Pi 版）的 opencode 适配版：三角色协作从 `pi -p` 子进程切换为 opencode `task` 工具 + subagent，外部调研从 `tvly`/`ctx7` CLI 切换为 `websearch`/`context7` MCP。已更名 SpecPipe。
-
 ## 架构
 
 三角色协作（opencode 原生 subagent）：
@@ -14,7 +12,7 @@
 | **explorer** | `deepseek-v4-flash` | subagent（无状态，只读） | 代码库调研 + 外部技术调研 |
 | **checker** | `kimi-k2.7-code` | subagent（无状态，可写 reviews/ 与 .stage） | 质量卡点：审查 + 写报告 + 更新状态 |
 
-> 角色模型、provider、工作流根目录、Git 分支策略等全部可配置，见 `skills/specpipe/config.md`。
+> 角色模型、provider、工作流根目录、Git 分支策略等全部可配置，见 `specpipe/config.md`。
 
 ## 工作流
 
@@ -33,14 +31,31 @@
 
 ## 安装
 
-### 全局安装（所有项目可用）
+### 一键安装（推荐）
 
-将 skill 与 agent 复制到 opencode 全局配置目录：
+在 `opencode.json` 的 `skills.urls` 中注册，opencode 会自动拉取并缓存本 skill：
+
+```json
+{
+  "skills": {
+    "urls": ["https://raw.githubusercontent.com/jiazhousa/SpecPipe/main"]
+  }
+}
+```
+
+agent 文件（`explorer.md`、`checker.md`）仍需手动复制（opencode 暂不支持 agent 远程安装）：
+
+```bash
+mkdir -p ~/.config/opencode/agents
+cp agents/explorer.md agents/checker.md ~/.config/opencode/agents/
+```
+
+### 手动复制安装
 
 ```bash
 # 1. skill
 mkdir -p ~/.config/opencode/skills/specpipe
-cp -r skills/specpipe/* ~/.config/opencode/skills/specpipe/
+cp -r specpipe/* ~/.config/opencode/skills/specpipe/
 
 # 2. agents
 mkdir -p ~/.config/opencode/agents
@@ -64,13 +79,13 @@ cp agents/explorer.md agents/checker.md ~/.config/opencode/agents/
 
 ```bash
 mkdir -p .opencode/skills/specpipe .opencode/agents
-cp -r skills/specpipe/* .opencode/skills/specpipe/
+cp -r specpipe/* .opencode/skills/specpipe/
 cp agents/explorer.md agents/checker.md .opencode/agents/
 ```
 
 ## 配置
 
-所有可配置项集中在 `skills/specpipe/config.md`，默认值即作者个人配置：
+所有可配置项集中在 `specpipe/config.md`，默认值即作者个人配置：
 
 | 配置项 | 默认值 | 说明 |
 |--------|--------|------|

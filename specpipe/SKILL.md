@@ -1,15 +1,15 @@
 ---
 name: specpipe
-description: 编码工作流 — builder agent 收到开发需求后自动驱动 spec→impl→coding→质量门全流程，用户只在访谈澄清、分级确认、审查不通过时参与。三角色架构（opencode 版）：builder（主会话有状态）+ explorer（只读子代理调研）+ checker（质量卡点子代理，写报告并更新状态）。
+description: 编码工作流 — builder agent 收到开发需求后自动驱动 spec→impl→coding→质量门全流程，用户只在访谈澄清、分级确认、审查不通过时参与。三角色架构：builder（主会话有状态）+ explorer（只读子代理调研）+ checker（质量卡点子代理，写报告并更新状态）。
 license: MIT
 compatibility: opencode
 metadata:
   author: starlex
-  version: 4.5.0-opencode
+  version: 1.0.0
   workflow: spec-impl-coding
 ---
 
-# 编码工作流（opencode 版）
+# 编码工作流（SpecPipe）
 
 builder agent 自动驱动的编码流程。用户只需在**访谈澄清、分级确认、审查不通过**时参与，其余全自动推进。工作流根据需求规模自动分流为 Epic / Story / Issue 三条路径。
 
@@ -651,4 +651,4 @@ explorer subagent 使用 opencode 已配置的 MCP 进行外部调研：
 
 ## 安装与文件清单
 
-> **opencode 版安装**：本 skill 为全局安装，位于 `~/.config/opencode/skills/specpipe/`（SKILL.md + config.md + docs/）。配套 subagent 定义在 `~/.config/opencode/agents/`（explorer.md、checker.md）。外部调研使用 opencode 已配置的 MCP：`websearch`（Tavily）+ `context7`。**角色模型、provider、工作流根目录等可配置项见 `config.md`**。环境要求：`TAVILY_API_KEY`（websearch MCP 使用，已在 `~/.config/opencode/opencode.json` 配置）；**tmux**（质量门长时检查的前置依赖，`apt install tmux` / `brew install tmux`）。
+> **安装**：本 skill 为全局安装，位于 `~/.config/opencode/skills/specpipe/`（SKILL.md + config.md + docs/）。配套 subagent 定义在 `~/.config/opencode/agents/`（explorer.md、checker.md）。外部调研使用 opencode 已配置的 MCP：`websearch`（Tavily）+ `context7`。**角色模型、provider、工作流根目录等可配置项见 `config.md`**。环境要求：`TAVILY_API_KEY`（websearch MCP 使用，已在 `~/.config/opencode/opencode.json` 配置）；**tmux**（质量门长时检查的前置依赖，`apt install tmux` / `brew install tmux`）。
