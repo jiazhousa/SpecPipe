@@ -66,7 +66,7 @@ S0 调研
 
 builder agent 调用 **explorer**（subagent，`task` 工具）执行：
 - 任务 A：内部代码库调研（grep 搜索相关代码，理解现有实现）
-- 任务 B：外部技术调研（`websearch_tavily` MCP + `context7` MCP 搜索技术文档，见「检索工具」）
+- 任务 B：外部技术调研（`websearch` MCP + `context7` MCP 搜索技术文档，见「检索工具」）
 
 builder 可在同一调研阶段**发起多个 explorer 任务**（`task` 工具支持并行调用）。产出保留在对话上下文，不写文件。
 
@@ -75,7 +75,7 @@ builder 可在同一调研阶段**发起多个 explorer 任务**（`task` 工具
 task(
   subagent_type: "explorer",
   description: "S0 调研：{topic}",
-  prompt: "调研需求：{需求描述}。任务 A：检索代码库相关实现；任务 B：用 websearch_tavily 和 context7 查外部技术方案。输出结构化调研结果。"
+  prompt: "调研需求：{需求描述}。任务 A：检索代码库相关实现；任务 B：用 websearch 和 context7 查外部技术方案。输出结构化调研结果。"
 )
 ```
 
@@ -596,7 +596,7 @@ explorer subagent 使用 opencode 已配置的 MCP 进行外部调研：
 
 | MCP | 用途 | 说明 |
 |-----|------|------|
-| `{{search_mcp}}` | Tavily 网络搜索 | MCP server，名 `websearch_tavily`，无需额外 CLI |
+| `{{search_mcp}}` | Tavily 网络搜索 | MCP server，名 `websearch`，无需额外 CLI |
 | `{{docs_mcp}}` | 技术文档查询 | MCP server，名 `context7`，解析库 ID 后查文档 |
 
 > 环境依赖：两个 MCP 已配置在 `~/.config/opencode/opencode.json` 的 `mcp` 段。explorer 直接调用对应工具即可，无需安装 CLI。
@@ -663,4 +663,4 @@ explorer subagent 使用 opencode 已配置的 MCP 进行外部调研：
 
 ## 安装与文件清单
 
-> **安装**：本 skill 为全局安装，位于 `~/.config/opencode/skills/specpipe/`（SKILL.md + config.md + docs/）。配套 subagent 定义在 `~/.config/opencode/agents/`（explorer.md、checker.md）。外部调研使用 opencode 已配置的 MCP：`websearch_tavily`（Tavily）+ `context7`。**角色模型、provider、工作流根目录等可配置项见 `config.md`**。环境要求：`TAVILY_API_KEY`（websearch_tavily MCP 使用，已在 `~/.config/opencode/opencode.json` 配置）；**tmux**（质量门长时检查的前置依赖，`apt install tmux` / `brew install tmux`）。
+> **安装**：本 skill 为全局安装，位于 `~/.config/opencode/skills/specpipe/`（SKILL.md + config.md + docs/）。配套 subagent 定义在 `~/.config/opencode/agents/`（explorer.md、checker.md）。外部调研使用 opencode 已配置的 MCP：`websearch`（Tavily）+ `context7`。**角色模型、provider、工作流根目录等可配置项见 `config.md`**。环境要求：`TAVILY_API_KEY`（websearch MCP 使用，已在 `~/.config/opencode/opencode.json` 配置）；**tmux**（质量门长时检查的前置依赖，`apt install tmux` / `brew install tmux`）。

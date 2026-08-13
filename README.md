@@ -92,15 +92,15 @@ cp agents/explorer.md agents/checker.md .opencode/agents/
 | `wf` | `.specpipe` | 工作流产出根目录 |
 | `provider` | `gateway` | 模型 provider |
 | `builder_model` / `explorer_model` / `checker_model` | `glm-5.2` / `deepseek-v4-flash` / `kimi-k2.7-code` | 三角色模型 |
-| `search_mcp` / `docs_mcp` | `websearch_tavily` / `context7` | 外部调研 MCP |
+| `search_mcp` / `docs_mcp` | `websearch` / `context7` | 外部调研 MCP |
 | `main_branch` / `release_branch` / `master_branch` | `develop` / `release` / `master` | Git 分支策略 |
 
 ## 环境要求
 
 - [opencode](https://opencode.ai)
 - **tmux**（质量门长时检查）
-- `TAVILY_API_KEY`（`websearch_tavily` MCP 使用）
-- MCP servers：`websearch_tavily`（Tavily）+ `context7`
+- `TAVILY_API_KEY`（`websearch` MCP 使用）
+- MCP servers：`websearch`（Tavily）+ `context7`
 - **external_directory 白名单**（worktree 编码所需）：
 
 ```json

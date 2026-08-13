@@ -27,7 +27,7 @@
 
 | key | 默认值 | 说明 |
 |-----|--------|------|
-| `search_mcp` | `websearch_tavily` | 网络搜索 MCP server（Tavily） |
+| `search_mcp` | `websearch` | 网络搜索 MCP server（Tavily） |
 | `docs_mcp` | `context7` | 技术文档查询 MCP server（Context7） |
 
 > 两个 MCP 已配置在 `~/.config/opencode/opencode.json` 的 `mcp` 段，explorer 直接调用对应工具，无需额外 CLI。
