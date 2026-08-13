@@ -265,6 +265,8 @@ builder agent 基于已通过的 spec 产出 impl 文档，写入 `{wf}/plans/{t
 ## 技术方案 | 改动点 | 依赖 | 风险
 ```
 
+> **行号标注规范**：impl 中定位代码位置时，优先用方法名/类名/注释等语义描述（如"advanceCustomer 方法末尾"、"receiveCustomerLog 方法之后"）。若附行号，仅作辅助参考，需标注"约"字（如"约 L2155"），因代码版本变动会导致行号偏移。审查时以语义定位为准，行号不作为审查基准。
+
 ### S-S7 访谈与澄清（用户参与）
 
 impl 文档产出后，builder agent 识别 impl 中的技术决策模糊点（如多种实现方案的选择、兼容性处理方式、性能取舍等），**分批向用户提问**确认。此环节确保技术方案与用户预期一致后再进入审查。
@@ -277,7 +279,7 @@ builder agent 将 `.stage` → `IMPL_REVIEWING`，然后调用 **checker**（sub
 
 1. **术语一致性** — impl 与 spec 术语是否对齐？有无歧义？
 2. **范围对齐** — impl 是否完整覆盖 spec 的业务规则与验收标准？有无遗漏/越界？
-3. **改动点核查** — 结合实际代码逐项核对 impl 中列出的改动点，确认路径、类名、方法签名是否真实存在且匹配
+3. **改动点核查** — 结合实际代码逐项核对 impl 中列出的改动点，确认路径、类名、方法签名是否真实存在且匹配。**impl 中的行号标注为辅助定位，不作为审查基准**（代码版本变动会导致行号偏移，以方法名/注释/上下文描述定位为准）
 4. **隐藏依赖** — 是否依赖未声明的外部系统/接口？是否调用了不存在的方法？
 5. **风险与兜底** — 架构/性能/安全风险，异常分支、并发、事务、幂等等是否有兜底？
 6. **回归面** — 改动是否波及既有功能？是否需要兼容处理？
@@ -385,6 +387,7 @@ S-S9 / I-S6 编码前的**环境检查**环节，统一按此章节执行。所�
 
 - 读取 `.stage`，必须为 `IMPL_APPROVED`（Issue 为 `ISSUE_IMPL_APPROVED`）
 - 不满足 → 拒绝执行："当前 topic 的 impl 审查尚未通过，请先完成 S-S8 / I-S5 审查"
+- **同步主 worktree 到最新**：在项目 git 仓库根目录执行 `git fetch origin && git checkout {{main_branch}} && git pull origin {{main_branch}}`，确保主 worktree 代码与远端一致。此步骤确保后续 checker 审查时用 read 工具读到的代码与 worktree 代码版本一致，避免因主 worktree 停留在旧分支导致 checker 误判
 
 ### 创建 worktree
 
@@ -455,8 +458,8 @@ git branch -d $BRANCH
 2. **代码质量（OCR 流水线）** — 规则注入 + 逐文件审查 + 行级锚定 + 事实校验 + 精度优先，附质量评分（critical -25 / high -12 / medium -5 / low -2）
 3. **commit 信息** — 每个 commit message 简洁清晰、符合项目既有风格
 4. **整体编译通过** — 在 worktree 中执行编译命令（如 `mvn compile`）
-5. **受影响模块测试** — 执行受影响模块的测试用例（如 `mvn test -pl <模块>`）
-6. **测试覆盖与回归** — 新增测试已实现，既有测试未破坏
+5. **受影响模块测试（fence）** — **必须执行项目的测试围栏脚本（如 `./scripts/run-test-fence.sh`），不得以"无新增测试"为由跳过**。若项目无 fence 脚本，则执行受影响模块的测试命令（如 `mvn test -pl <模块>`）。fence 结果摘要需附入审查报告
+6. **测试覆盖与回归** — 新增测试已实现，既有测试未破坏。fence 失败用例需逐一分析是回归还是预期行为变更
 7. **文档归档与 AGENTS.md**（Story/Epic 适用，Issue 跳过）— spec/impl 已归档，关键 feature 已记录到项目根 `AGENTS.md`
 
 > checker 放开 bash 权限执行编译/测试命令，权限白名单见 `agents/checker.md`。

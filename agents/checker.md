@@ -43,9 +43,13 @@ permission:
 
 ## 代码核查
 
-审查涉及实际代码时（Impl 审查的"改动点核查"、质量门全面审查），可用只读 git 命令获取 diff 与当前状态：
+审查涉及实际代码时（Impl 审查的"改动点核查"、质量门全面审查），**优先使用 read/grep/glob 工具读取文件**，仅在需要查看 git diff/log 或执行编译测试命令时用 bash。
+
+> ⚠️ **禁止用 `git show <branch>:<path>` 方式读取代码**——分支引用路径易错且上下文不完整。直接用 read 工具读取 worktree 中的文件（builder 在 prompt 中传入 worktree 绝对路径）。
+
+可用只读 git 命令获取 diff 与当前状态：
 - `git diff` / `git diff --staged` / `git diff <from>..<to>` — 查看改动内容
-- `git log` / `git show` — 查看提交历史与具体提交
+- `git log` / `git show <commit-hash>` — 查看提交历史与具体提交（用 commit hash，不用分支引用）
 - `git status` — 查看工作区状态
 
 质量门全面审查时，可用编译/测试命令在 worktree 中执行验证（builder 在 prompt 中传入 worktree 绝对路径，用 bash 工具的 workdir 参数指定）：
@@ -81,8 +85,8 @@ permission:
 2. **代码质量（OCR 流水线）** — 规则注入（根据变更文件后缀从 `~/.config/opencode/skills/specpipe/docs/review-rules/` 加载规则文档，映射见 `system_rules.json`，20 个语言规则 + `default.md` 兜底）+ 逐文件审查（死代码、逻辑错误、性能、线程安全等）+ 行级锚定（existing_code 1~3 行 + start_line 行号）+ 事实校验（diff 可证伪的剔除）+ 精度优先（宁缺毋滥）
 3. **commit 信息** — 用 `git log` 检查每个 commit message 简洁清晰、符合项目既有风格
 4. **整体编译** — 在 worktree 执行编译命令（如 `mvn compile`），确认编译通过
-5. **受影响模块测试** — 执行受影响模块的测试用例（如 `mvn test -pl <模块>`）
-6. **测试覆盖与回归** — 新增测试已实现、既有测试未破坏
+5. **受影响模块测试（fence）** — **必须执行项目的测试围栏脚本（如 `./scripts/run-test-fence.sh`），不得以"无新增测试"为由跳过**。若项目无 fence 脚本，则执行受影响模块的测试（如 `mvn test -pl <模块>`）。fence 结果摘要需附入审查报告
+6. **测试覆盖与回归** — 新增测试已实现、既有测试未破坏（fence 结果为依据）。fence 失败用例需逐一分析是否为回归
 7. **文档归档与 AGENTS.md**（Story/Epic 适用，Issue 跳过）— spec/impl 已归档、关键 feature 已记录到项目根 `AGENTS.md`
 
 **评分**（代码质量用）：
@@ -91,6 +95,7 @@ permission:
 
 ## 审查报告格式
 
+**普通审查（Spec / Impl / Issue Impl）**：
 ```markdown
 # 审查报告: {topic} (Revision {N})
 ## 总体评价
@@ -101,6 +106,26 @@ permission:
    - 建议：[修复建议]
 ## 结论
 # PASS / # REJECT / # REJECT: SPEC_OVERTURN
+状态：{审查前状态} → {审查后状态}
+```
+
+**质量门全面审查**（在普通审查格式基础上增加质量评分和 fence 结果）：
+```markdown
+# 质量门审查报告: {topic} (Revision {N})
+## 总体评价
+[通过 / 不通过]
+## 质量评分
+{评分} / 100
+## fence 结果
+- 单元测试：{用例数} 用例，{通过数} 通过，{失败数} 失败，{跳过数} 跳过，{耗时}
+- E2E 测试：{用例数} 用例，{通过数} 通过，{失败数} 失败，{跳过数} 跳过，{耗时}
+- 合计：{总用例数} 用例，{总通过数} 通过，{总失败数} 失败
+## 发现的问题
+1. [问题] — 严重程度：critical/high/medium/low
+   - 影响：[描述]
+   - 建议：[修复建议]
+## 结论
+# PASS / # REJECT
 状态：{审查前状态} → {审查后状态}
 ```
 
