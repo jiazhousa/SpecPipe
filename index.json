@@ -2,12 +2,33 @@
   "skills": [
     {
       "name": "specpipe",
-      "version": "1.0.0",
+      "version": "2.0.0",
       "files": [
         "SKILL.md",
         "config.md",
         "docs/quality-gate.md",
-        "docs/git-branch-guide.md"
+        "docs/git-branch-guide.md",
+        "docs/review-rules/system_rules.json",
+        "docs/review-rules/arkts.md",
+        "docs/review-rules/astro.md",
+        "docs/review-rules/build_gradle.md",
+        "docs/review-rules/c.md",
+        "docs/review-rules/cargo_toml.md",
+        "docs/review-rules/cpp.md",
+        "docs/review-rules/default.md",
+        "docs/review-rules/github_config.md",
+        "docs/review-rules/github_workflows.md",
+        "docs/review-rules/java.md",
+        "docs/review-rules/json.md",
+        "docs/review-rules/kotlin.md",
+        "docs/review-rules/mapper_dao_xml.md",
+        "docs/review-rules/package_json.md",
+        "docs/review-rules/pom_xml.md",
+        "docs/review-rules/properties.md",
+        "docs/review-rules/python.md",
+        "docs/review-rules/rust.md",
+        "docs/review-rules/ts_js_tsx_jsx.md",
+        "docs/review-rules/yaml.md"
       ]
     }
   ]
