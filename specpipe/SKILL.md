@@ -56,7 +56,7 @@ S0 调研
 
 > **Issue 不走 spec 阶段** — Issue 级别的需求在 S1 前置访谈中就把改动点聊清楚，S2 确认后直接产出 Impl 文档 → 审查 → 编码 → 质量门。无 Spec 文档、无 Spec 审查。
 
-> **质量门（S-S10 / I-S7）** 是所有编码路径的**终检环节**，在提交到远端前执行，4 项检查通过后才推送分支。详见后文「质量门环节」章节。
+> **质量门（S-S10 / I-S7）** 是所有编码路径的**终检环节**，在提交到远端前由 checker 执行全面审查（7 项），通过后才推送分支。详见后文「质量门环节」章节。
 
 ---
 
@@ -66,7 +66,7 @@ S0 调研
 
 builder agent 调用 **explorer**（subagent，`task` 工具）执行：
 - 任务 A：内部代码库调研（grep 搜索相关代码，理解现有实现）
-- 任务 B：外部技术调研（`websearch` MCP + `context7` MCP 搜索技术文档，见「检索工具」）
+- 任务 B：外部技术调研（`websearch_tavily` MCP + `context7` MCP 搜索技术文档，见「检索工具」）
 
 builder 可在同一调研阶段**发起多个 explorer 任务**（`task` 工具支持并行调用）。产出保留在对话上下文，不写文件。
 
@@ -75,7 +75,7 @@ builder 可在同一调研阶段**发起多个 explorer 任务**（`task` 工具
 task(
   subagent_type: "explorer",
   description: "S0 调研：{topic}",
-  prompt: "调研需求：{需求描述}。任务 A：检索代码库相关实现；任务 B：用 websearch 和 context7 查外部技术方案。输出结构化调研结果。"
+  prompt: "调研需求：{需求描述}。任务 A：检索代码库相关实现；任务 B：用 websearch_tavily 和 context7 查外部技术方案。输出结构化调研结果。"
 )
 ```
 
@@ -596,7 +596,7 @@ explorer subagent 使用 opencode 已配置的 MCP 进行外部调研：
 
 | MCP | 用途 | 说明 |
 |-----|------|------|
-| `{{search_mcp}}` | Tavily 网络搜索 | MCP server，名 `websearch`，无需额外 CLI |
+| `{{search_mcp}}` | Tavily 网络搜索 | MCP server，名 `websearch_tavily`，无需额外 CLI |
 | `{{docs_mcp}}` | 技术文档查询 | MCP server，名 `context7`，解析库 ID 后查文档 |
 
 > 环境依赖：两个 MCP 已配置在 `~/.config/opencode/opencode.json` 的 `mcp` 段。explorer 直接调用对应工具即可，无需安装 CLI。
@@ -608,7 +608,7 @@ explorer subagent 使用 opencode 已配置的 MCP 进行外部调研：
 1. **builder agent 驱动全流程** — 无需用户手动调命令，builder agent 按阶段自动推进
 2. **Plan 阶段不编码** — spec+impl 均审查通过前不修改业务代码（Issue 路径无 spec，impl 审查通过前不编码）
 3. **用户只在必要时参与** — 前置访谈（S1，定设想+范围+改动点）、分级确认与等级重调整（S2）、Epic Spec 澄清与放行（E-S4/E-S5）、Story Spec 澄清与放行（S-S4/S-S5）、Story Impl 澄清（S-S7）、Issue Impl 澄清（I-S4）、审查推翻 spec 决策（SPEC_OVERTURN）
-4. **记忆分三层，无独立记忆文件** — ①全局层：`~/.config/opencode/AGENTS.md`（跨项目个人偏好/规则，静态维护）；②项目层：项目根 `AGENTS.md`（关键 feature 记录，质量门第 4 项追加）；③任务层：`{wf}/plans/{topic}/` 下的 spec/impl 文档（任务态，随任务生灭）。不设 `save_memory` 工具、不写 `.opencode/memory/`、不写 MEMORY.md
+4. **记忆分三层，无独立记忆文件** — ①全局层：`~/.config/opencode/AGENTS.md`（跨项目个人偏好/规则，静态维护）；②项目层：项目根 `AGENTS.md`（关键 feature 记录，质量门第 7 项文档归档时追加）；③任务层：`{wf}/plans/{topic}/` 下的 spec/impl 文档（任务态，随任务生灭）。不设 `save_memory` 工具、不写 `.opencode/memory/`、不写 MEMORY.md
 5. **所有文档和记忆使用中文**
 6. **S2 分级判定是必经环节且允许重调整** — 任何需求都需经过 S2 分级；S2 是统一调度点，builder agent 可基于调研+访谈的实际发现提议升级或降级，经用户确认后调整路径
 7. **Epic 先有 Epic Spec 再拆 Story** — Epic 路径先产出 Epic 级规格文档（含 Story 路线图），放行后逐个 Story 从 S0 走完整 Story 路径
@@ -663,4 +663,4 @@ explorer subagent 使用 opencode 已配置的 MCP 进行外部调研：
 
 ## 安装与文件清单
 
-> **安装**：本 skill 为全局安装，位于 `~/.config/opencode/skills/specpipe/`（SKILL.md + config.md + docs/）。配套 subagent 定义在 `~/.config/opencode/agents/`（explorer.md、checker.md）。外部调研使用 opencode 已配置的 MCP：`websearch`（Tavily）+ `context7`。**角色模型、provider、工作流根目录等可配置项见 `config.md`**。环境要求：`TAVILY_API_KEY`（websearch MCP 使用，已在 `~/.config/opencode/opencode.json` 配置）；**tmux**（质量门长时检查的前置依赖，`apt install tmux` / `brew install tmux`）。
+> **安装**：本 skill 为全局安装，位于 `~/.config/opencode/skills/specpipe/`（SKILL.md + config.md + docs/）。配套 subagent 定义在 `~/.config/opencode/agents/`（explorer.md、checker.md）。外部调研使用 opencode 已配置的 MCP：`websearch_tavily`（Tavily）+ `context7`。**角色模型、provider、工作流根目录等可配置项见 `config.md`**。环境要求：`TAVILY_API_KEY`（websearch_tavily MCP 使用，已在 `~/.config/opencode/opencode.json` 配置）；**tmux**（质量门长时检查的前置依赖，`apt install tmux` / `brew install tmux`）。

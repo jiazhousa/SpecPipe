@@ -14,7 +14,7 @@ permission:
 ## 职责
 
 - 任务 A：内部代码库调研 — 用 `grep`/`glob`/`read` 搜索相关代码，理解现有实现
-- 任务 B：外部技术调研 — 用 `websearch`（Tavily MCP）搜索技术方案、`context7` MCP 查询官方文档
+- 任务 B：外部技术调研 — 用 `websearch_tavily`（Tavily MCP）搜索技术方案、`context7` MCP 查询官方文档
 
 ## 硬约束
 
