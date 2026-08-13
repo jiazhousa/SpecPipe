@@ -214,7 +214,7 @@ S-S3 构建 Story Spec
  → S-S7 访谈与澄清（用户参与）
  → S-S8 checker 审查 ──REJECT──→ 回到 S-S6
  → S-S8 PASS → 不阻塞，直接进入 S-S9
- → S-S9 编码（含编码后 check）→ S-S10 质量门 → DONE
+ → S-S9 编码 → S-S10 质量门（checker 全面审查）→ DONE
 ```
 
 ### S-S3 构建 Story Spec
@@ -295,11 +295,11 @@ builder agent 在实际代码中执行 impl 描述的改动。
 1. `.stage` → `WORKING`
 2. **环境检查**：按「编码环境（worktree）」章节创建 worktree，从 develop 分支拉取新分支（分支类型根据 Story 性质命名：`dev/feat/*`、`dev/fix/*`、`dev/refactor/*` 等，见 config.md）
 3. 编码、编译验证
-4. 编码完成后以 `CODE_REVIEWING` 标记递交 **checker**（subagent）做代码审查，直至审查通过
-5. 审查通过后提交到本地分支
-6. 进入 **S-S10 质量门**（详见后文），通过后 `.stage` → `DONE`
+4. **文档归档与 AGENTS.md**：把 spec.md/impl.md 归档，关键 feature 追加到项目根 `AGENTS.md`
+5. 整理 commit（本地 commit，每个 commit 能独立编译）
+6. `.stage` → `QUALITY_GATE`，递交 **checker**（subagent）做全面审查，直至 PASS → `.stage` → `DONE`
 
-> **编码后 check**：此环节的 check 针对实际代码（而非文档），重点核查实现是否与 impl 文档一致、代码质量、编译通过性。审查报告由 checker **直接写**至 `{wf}/reviews/{topic}-code-revision-{N}.md`，并更新 `.stage`。
+> **质量门全面审查**：此环节由 checker 一次性执行 7 项审查（impl 一致性 + 代码质量 OCR 流水线 + commit 信息 + 整体编译 + 受影响模块测试 + 测试覆盖回归 + 文档归档），审查报告由 checker **直接写**至 `{wf}/reviews/{topic}-quality-gate-revision-{N}.md`，并更新 `.stage`。
 
 > **编码失败处理**：若编译/测试不过，builder agent 修复后重新提交 check；连续 3 次失败则提示用户人工介入。
 
@@ -314,7 +314,7 @@ I-S3 构建 Issue Impl
  → I-S4 访谈与澄清（用户参与）
  → I-S5 checker 审查 ──REJECT──→ 回到 I-S3
  → I-S5 PASS → 不阻塞，直接进入 I-S6
- → I-S6 编码（含编码后 check）→ I-S7 质量门 → DONE
+ → I-S6 编码 → I-S7 质量门（checker 全面审查）→ DONE
 ```
 
 ### I-S3 构建 Issue Impl
@@ -362,11 +362,10 @@ builder agent 将 `.stage` → `ISSUE_IMPL_REVIEWING`，然后调用 **checker**
 1. `.stage` → `WORKING`
 2. **环境检查**：按「编码环境（worktree）」章节创建 worktree，从 develop 分支拉取新分支（分支类型根据 Issue 性质命名：`dev/fix/*`、`dev/feat/*`、`dev/refactor/*` 等，见 config.md）
 3. 编码、编译验证
-4. 编码完成后以 `CODE_REVIEWING` 标记递交 **checker**（subagent）做代码审查，直至审查通过
-5. 审查通过后提交到本地分支
-6. 进入 **I-S7 质量门**（详见后文），通过后 `.stage` → `DONE`
+4. 整理 commit（本地 commit，每个 commit 能独立编译）
+5. `.stage` → `QUALITY_GATE`，递交 **checker**（subagent）做全面审查，直至 PASS → `.stage` → `DONE`
 
-> **编码后 check**：审查报告由 checker **直接写**至 `{wf}/reviews/{topic}-code-revision-{N}.md`，并更新 `.stage`。
+> **质量门全面审查**：同 S-S9，checker 一次性执行全面审查（Issue 跳过文档归档项）。审查报告由 checker **直接写**至 `{wf}/reviews/{topic}-quality-gate-revision-{N}.md`，并更新 `.stage`。
 
 > **升级机制**：若编码过程中发现改动范围超出预期（如 >3 文件、引入新业务规则），builder agent 应**暂停编码**，主动提示"发现超预期，建议升级为 Story 级"。用户确认升级后：
 > 1. 清理当前 `.stage` 文件（`{wf}/plans/{topic}/.stage`）
@@ -443,11 +442,24 @@ git branch -d $BRANCH
 
 ---
 
-## 质量门环节（S-S10 / I-S7）
+## 质量门环节（S-S10 / I-S7，checker 全面审查）
 
-**所有编码路径在提交到远端前必须经过质量门终检**，执行 4 项检查：commit 验证、代码质量迭代、测试覆盖与回归、文档归档与 AGENTS.md（Issue 跳过第 4 项）。
+**所有编码路径在提交到远端前必须经过质量门终检**。质量门由 **checker** 一次性执行全面审查（原「编码后 check」与「质量门 4 项检查」合并），builder 不再自查——checker 用不同模型交叉验证，把代码质量、实现一致性、commit、编译、测试、文档归档的所有问题一次性列出，builder 修复后重新递交，全量重审直至 PASS。
 
-`.stage` → `QUALITY_GATE`，通过后 `.stage` → `DONE`。**不自动推送**，提示用户手动推送。
+`.stage` → `QUALITY_GATE`（builder 设置），checker 审查完成后：
+- **PASS** → `.stage` → `DONE`
+- **REJECT** → `.stage` → `WORKING`，builder 修复后重新递交，全量重审
+
+**checker 全面审查清单（7 项）**：
+1. **实现与 impl 一致性** — 实际改动是否与 impl 文档描述一致
+2. **代码质量（OCR 流水线）** — 规则注入 + 逐文件审查 + 行级锚定 + 事实校验 + 精度优先，附质量评分（critical -25 / high -12 / medium -5 / low -2）
+3. **commit 信息** — 每个 commit message 简洁清晰、符合项目既有风格
+4. **整体编译通过** — 在 worktree 中执行编译命令（如 `mvn compile`）
+5. **受影响模块测试** — 执行受影响模块的测试用例（如 `mvn test -pl <模块>`）
+6. **测试覆盖与回归** — 新增测试已实现，既有测试未破坏
+7. **文档归档与 AGENTS.md**（Story/Epic 适用，Issue 跳过）— spec/impl 已归档，关键 feature 已记录到项目根 `AGENTS.md`
+
+> checker 放开 bash 权限执行编译/测试命令，权限白名单见 `agents/checker.md`。
 
 > **长时检查用 tmux**：质量门的测试/编译等长时命令在 tmux 中运行，可观测且不随会话中断：
 > ```bash
@@ -457,7 +469,7 @@ git branch -d $BRANCH
 > tmux kill-session -t qg-test 2>/dev/null
 > ```
 
-> **按需加载**：4 项检查的详细说明见 `docs/quality-gate.md`，进入质量门环节时 builder agent 用 read 工具加载。
+> **按需加载**：全面审查清单的详细说明见 `docs/quality-gate.md`，checker 进入质量门审查时用 read 工具加载。
 
 ---
 
@@ -480,7 +492,7 @@ SPEC_DRAFT → SPEC_REVIEWING → SPEC_USER_AUDIT [阻塞等用户放行] → SP
 ISSUE_IMPL_DRAFT → ISSUE_IMPL_REVIEWING → ISSUE_IMPL_APPROVED [不阻塞] → WORKING → QUALITY_GATE → DONE
 ```
 
-- **builder 与 checker 分工更新 `.stage`**：builder 负责流程推进（DRAFT 创建、`*_REVIEWING` 标记、用户放行后 `*_APPROVED`、`WORKING`、`QUALITY_GATE`、`DONE`）；checker 负责审查结果落定（PASS → 下一状态，REJECT → 回退 DRAFT）
+- **builder 与 checker 分工更新 `.stage`**：builder 负责流程推进（DRAFT 创建、`*_REVIEWING` 标记、`WORKING`、`QUALITY_GATE` 标记、用户放行后 `SPEC_APPROVED`/`EPIC_SPEC_APPROVED`、`DONE`）；checker 负责审查结果落定（PASS → 下一状态，REJECT → 回退 DRAFT / `WORKING`）
 
 **checker 状态转移表**（checker 审查完成后更新 `.stage`）：
 
@@ -490,16 +502,16 @@ ISSUE_IMPL_DRAFT → ISSUE_IMPL_REVIEWING → ISSUE_IMPL_APPROVED [不阻塞] �
 | Spec（S-S5） | `SPEC_REVIEWING` | `SPEC_USER_AUDIT` | `SPEC_DRAFT` |
 | Impl（S-S8） | `IMPL_REVIEWING` | `IMPL_APPROVED` | `IMPL_DRAFT` |
 | Issue Impl（I-S5） | `ISSUE_IMPL_REVIEWING` | `ISSUE_IMPL_APPROVED` | `ISSUE_IMPL_DRAFT` |
-| 代码审查（S-S9/I-S6） | `CODE_REVIEWING` | `WORKING`（builder 提交→质量门） | `WORKING`（builder 修复→重新递交） |
+| 全面审查（质量门，S-S9/I-S6） | `QUALITY_GATE` | `DONE` | `WORKING`（builder 修复 → 重新递交） |
 
 > checker 审查前先读 `.stage` 校验当前状态与上表「审查前状态」一致，不一致则中止并提示 builder。
-- 审查不通过 → 回退到前一个 DRAFT，builder agent 自动修复后重新提交审查
+- 审查不通过 → 回退到前一个 DRAFT，builder agent 自动修复后重新提交审查（质量门全面审查例外：REJECT 回 `WORKING`，builder 修复后重新递交）
 - Impl 审查推翻 spec → 回退 `SPEC_DRAFT` / `ISSUE_IMPL_DRAFT`（Epic 下 Story 需评估是否连锁回退 Epic Spec）
 - **S-S5 审查通过后阻塞** — `SPEC_USER_AUDIT` 状态下须用户放行才进入 S-S6
 - **E-S5 审查通过后阻塞** — `EPIC_SPEC_USER_AUDIT` 状态下须用户放行才结束 Epic 流程
 - **I-S5 审查通过后不阻塞** — `ISSUE_IMPL_APPROVED` 后直接进入编码（Issue 无 Spec 阶段，无用户放行环节）
 - **S-S8 通过后不阻塞** — `IMPL_APPROVED` 后直接进入 S-S9 编码
-- **质量门是终检** — `QUALITY_GATE` 状态下执行 4 项检查，通过后 `DONE`
+- **质量门是终检（checker 全面审查）** — `QUALITY_GATE` 状态下 checker 一次性执行全面审查（代码质量 OCR + impl 一致性 + commit 信息 + 整体编译 + 受影响模块测试 + 测试覆盖回归 + 文档归档），PASS → `DONE`，REJECT → `WORKING`
 - **Issue 编码中升级** — 若发现改动超预期，暂停编码，清理 `.stage` 文件，保留 issue-impl 作为参考，回 S2 重新分级
 - **S2 统一调度点允许等级重调整** — 调研+访谈结束后，builder agent 可基于实际发现提议升级或降级，经用户确认后调整路径
 - **SPEC_OVERTURN 回 S2 不重跑调研** — 任何阶段审查推翻 spec（或 Issue 编码中发现需升级）回 S2 时，**不重跑 S0/S1**，仅基于已有产出（spec/impl/issue-impl）和访谈结果重新论证等级。若已有产出不足以支撑新等级判定，builder agent 可补充定向调研（仅针对新等级的判定依据，非全量重跑）
@@ -514,8 +526,8 @@ ISSUE_IMPL_DRAFT → ISSUE_IMPL_REVIEWING → ISSUE_IMPL_APPROVED [不阻塞] �
    - `*_REVIEWING` 状态 → 重新调用 checker 审查已有文档
    - `*_USER_AUDIT` 状态 → 向用户重新输出 spec 摘要并询问是否放行
    - `*_APPROVED` 状态 → 自动推进到下一阶段
-   - `WORKING` 状态 → 检查 worktree 中代码变更状态，继续编码或重新提交 check
-   - `QUALITY_GATE` 状态 → 重新执行质量门检查
+   - `WORKING` 状态 → 检查 worktree 中代码变更状态，继续编码
+   - `QUALITY_GATE` 状态 → 重新调用 checker 执行全面审查
    - `DONE` / `ALL_DONE` → 流程已完成，无需恢复
 3. **无 `.stage` 文件** → 检查 `{wf}/plans/{topic}/` 目录是否存在 `issue-impl.md` 或 `spec.md`：
    - 若存在 — 可能是**升级后残留**（Issue 升级为 Story 时清理了 `.stage`），询问用户是否继续升级流程还是重新开始
@@ -533,7 +545,7 @@ ISSUE_IMPL_DRAFT → ISSUE_IMPL_REVIEWING → ISSUE_IMPL_APPROVED [不阻塞] �
 |------|------|------|------|------|
 | **builder**（主构建者） | `{{builder_model}}`（{{provider}}） | 主会话（交互式） | **有状态**（会话 + `.stage`） | 所有实际开发、把控项目进度、spec/impl 文档产出、驱动全流程 |
 | **explorer**（调研者） | `{{explorer_model}}`（{{provider}}） | subagent（`task` 工具） | **无状态**（每次新建） | 内部代码仓检索 + 外部 {{search_mcp}}/{{docs_mcp}} 调研 |
-| **checker**（检查者） | `{{checker_model}}`（{{provider}}） | subagent（`task` 工具） | **无状态**（每次新建，可写 reviews/ 与 .stage） | 质量卡点：任务完成状态 check + 文档/代码交付质量 check + 审查结果落定（写报告 + 更新 .stage） |
+| **checker**（检查者） | `{{checker_model}}`（{{provider}}） | subagent（`task` 工具） | **无状态**（每次新建，可写 reviews/ 与 .stage、可执行编译/测试） | 质量卡点：任务完成状态 check + 文档/代码交付质量 check + 质量门全面审查（含编译/测试执行）+ 审查结果落定（写报告 + 更新 .stage） |
 
 > **角色定位说明**：
 > - **builder 是有状态的** — 主会话长期存在，承载 `.stage` 状态机、用户访谈、文档产出与代码修改。spec 的设计工作由 builder 亲自完成（不做角色外派）。
@@ -544,7 +556,7 @@ ISSUE_IMPL_DRAFT → ISSUE_IMPL_REVIEWING → ISSUE_IMPL_APPROVED [不阻塞] �
 
 builder 通过 opencode 的 **`task` 工具**调用 explorer/checker。两个 subagent 定义在 `~/.config/opencode/agents/`：
 - **explorer.md** — 只读（edit/bash deny），模型 `{{explorer_model}}`
-- **checker.md** — 写权限白名单：仅 `.specpipe/reviews/*` 与 `.specpipe/plans/*/.stage`
+- **checker.md** — 写权限白名单：仅 `.specpipe/reviews/*` 与 `.specpipe/plans/*/.stage`；bash 白名单：只读 git 命令 + 编译/测试命令（质量门全面审查用）
 
 **权限前提**：builder 调用 `task` 依赖 `permission.task`。若全局 `permission` 有 `"*": "ask"` 等收紧配置，需在 `opencode.json` 显式放行两个 subagent：
 
@@ -571,7 +583,7 @@ builder 通过 opencode 的 **`task` 工具**调用 explorer/checker。两个 su
 2. **材料传递**：需要子代理读取的文件路径写进 prompt（用 `@` 前缀或直接说明路径）；builder 在任务描述中说明各文件角色
 3. **权限边界**：
    - **explorer**：只读（edit/bash deny），严禁写任何文件
-   - **checker**：只允许写 `{wf}/reviews/` 下的审查报告和 `{wf}/plans/{topic}/.stage`，严禁修改任何业务代码文件（路径白名单已在 agent 定义中强制）
+   - **checker**：只允许写 `{wf}/reviews/` 下的审查报告和 `{wf}/plans/{topic}/.stage`，严禁修改任何业务代码文件（路径白名单已在 agent 定义中强制）；可执行只读 git 命令与编译/测试命令（质量门全面审查用），严禁其他 bash 命令
 4. **产出落盘**：checker 直接写报告文件 + 更新 `.stage`；stdout 回传结论摘要供 builder 决策
 5. **无状态含义**：每次调用都是全新上下文；builder 需把审查基准（spec/impl/代码 diff）显式传入 prompt
 6. **串行执行**：builder 一次可发起多个 explorer 任务（`task` 并行调用），但 checker 审查必须等编码/文档产出完成后再调用
@@ -608,11 +620,11 @@ explorer subagent 使用 opencode 已配置的 MCP 进行外部调研：
     - E-S5 Epic Spec 审查 = **轻量审查**（+Story 拆分合理性检查，≤40 行报告）
     - S-S8 Impl 审查 = **完整审查**（已有 spec+impl+代码上下文，6 项清单深入核查，把关重心在此）
     - I-S5 Issue Impl 审查 = **完整但精简审查**（6 项清单，范围聚焦于 ≤3 文件，以 S1 访谈确认的改动点为基准，适配 Issue 规模）
-    - S-S9/I-S6 编码后 check = **代码审查**（针对实际代码，核查实现与 impl 一致性、代码质量、编译通过性）
+    - S-S9/I-S6 质量门 = **全面审查**（checker 一次性执行：impl 一致性 + 代码质量 OCR 流水线 + commit 信息 + 整体编译 + 受影响模块测试 + 测试覆盖回归 + 文档归档，附质量评分 critical -25 / high -12 / medium -5 / low -2）
 12. **S-S8 / I-S5 通过后不阻塞** — Impl 审查通过后直接进入编码，无须用户再次确认
 13. **编码必须在新 worktree + 新分支** — S-S9 和 I-S6 均需创建 git worktree，从 develop 拉取新分支（feature/fix/refactor），不直接在 develop 上编码
-14. **质量门是所有编码路径的终检** — S-S10 / I-S7 在提交远端前执行 4 项检查（commit 验证、代码质量迭代、测试覆盖与回归、文档归档与 AGENTS.md），通过后才算 DONE
-15. **本地独立代码审查（LCR）** — 用户说"审查代码"、"review 代码"、"代码质量审查"等（非功能开发语境）时，builder agent 不走 specpipe 状态机，直接：①获取 git diff（`git diff` / `git diff --staged` / `git diff <from>..<to>`，按用户意图选择）；②以 `LOCAL_CODE_REVIEWING` 标记调用 checker；③checker 按逐文件审查 + 规则注入 + 行级锚定 + 事实校验的 OCR 流水线产出报告，**直接写**至 `{wf}/reviews/local-code-review-{YYYYMMDD-HHMM}.md`；④不推进任何 `.stage`，不写 PASS/REJECT 标记，仅输出报告供用户参考
+14. **质量门是所有编码路径的终检** — S-S10 / I-S7 由 checker 在 `QUALITY_GATE` 状态一次性执行全面审查（impl 一致性、代码质量 OCR、commit 信息、整体编译、受影响模块测试、测试覆盖回归、文档归档），PASS → `DONE`，REJECT → `WORKING` 修复后全量重审
+15. **本地独立代码审查（LCR）** — 用户说"审查代码"、"review 代码"、"代码质量审查"等（非功能开发语境）时，builder agent 不走 specpipe 状态机，直接：①获取 git diff（`git diff` / `git diff --staged` / `git diff <from>..<to>`，按用户意图选择）；②以 `LOCAL_CODE_REVIEWING` 标记调用 checker；③checker 按逐文件审查 + 规则注入 + 行级锚定 + 事实校验的 OCR 流水线产出报告，**直接写**至 `{wf}/reviews/local-code-review-{YYYYMMDD-HHMM}.md`；④不推进任何 `.stage`，不写 PASS/REJECT 标记，仅输出报告供用户参考。**规则注入的规则库**位于 `~/.config/opencode/skills/specpipe/docs/review-rules/`（`system_rules.json` 做文件后缀 → 规则文档映射，含 20 个语言规则 + `default.md` 兜底，来源：獬豸 v1.5.3 `conf/ocr/rules/rule_docs/`）
 
 ## 文件产出
 
@@ -626,7 +638,7 @@ explorer subagent 使用 opencode 已配置的 MCP 进行外部调研：
 | Spec 审查报告 | `{wf}/reviews/{topic}-spec-revision-{N}.md`（≤30 行） | checker 直接写 |
 | Impl 审查报告 | `{wf}/reviews/{topic}-impl-revision-{N}.md` | checker 直接写 |
 | Issue Impl 审查报告 | `{wf}/reviews/{topic}-issue-impl-revision-{N}.md` | checker 直接写 |
-| 编码后审查报告 | `{wf}/reviews/{topic}-code-revision-{N}.md` | checker 直接写 |
+| 质量门全面审查报告 | `{wf}/reviews/{topic}-quality-gate-revision-{N}.md` | checker 直接写 |
 | 本地独立代码审查报告 | `{wf}/reviews/local-code-review-{YYYYMMDD-HHMM}.md` | checker 直接写 |
 | 关键 feature 记录 | `AGENTS.md`（项目根目录） | builder |
 | 状态 | `{wf}/plans/{topic}/.stage` | builder（流程推进）/ checker（审查结果） |
@@ -635,7 +647,7 @@ explorer subagent 使用 opencode 已配置的 MCP 进行外部调研：
 
 > **Issue 路径产出文件**：I-S3 的 Issue Impl 写入 `{wf}/plans/{topic}/issue-impl.md`（Issue 无 Spec 文档）。
 
-> **审查轮次 `{N}` 计数规则**：N 从 1 开始，各审查类型（epic-spec / spec / impl / issue-impl / code）独立计数。**N 由 checker 确定**：`list` 工具列 `{wf}/reviews/` 下 `{topic}-{type}-revision-` 文件数 + 1。
+> **审查轮次 `{N}` 计数规则**：N 从 1 开始，各审查类型（epic-spec / spec / impl / issue-impl / quality-gate）独立计数。**N 由 checker 确定**：`list` 工具列 `{wf}/reviews/` 下 `{topic}-{type}-revision-` 文件数 + 1。
 
 > **`{topic}` 取值规则**：
 > - **Epic 路径**：`{topic}` = epic-topic（如 `crm-refactor`）
