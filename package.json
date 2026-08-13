@@ -1,6 +1,6 @@
 {
   "name": "specpipe",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "基于 opencode 的编码工作流 skill（spec 驱动流水线）：builder agent 自动驱动 spec→impl→coding→质量门全流程，需求自动分流为 Epic / Story / Issue",
   "keywords": ["opencode", "skill", "workflow", "coding", "multi-agent", "spec", "review"],
   "license": "MIT"

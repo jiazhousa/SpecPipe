@@ -2,7 +2,7 @@
 
 > 所有可配置项的默认值。**修改此文件即可定制工作流，无需改动 SKILL.md。**
 > builder 在进入工作流（S0 前）时用 read 工具加载本文件，用配置值替换 SKILL.md 中的 `{{key}}` 占位符。
-> 默认值即作者个人配置（Gateway + 开源模型）。
+> 默认值即作者个人配置（gateway + 开源模型）。
 
 ## 工作流根目录
 
@@ -16,18 +16,18 @@
 
 | key | 默认值 | 说明 |
 |-----|--------|------|
-| `provider` | `Gateway` | 模型 provider（opencode 的 `provider/model` 前缀） |
+| `provider` | `gateway` | 模型 provider（opencode 的 `provider/model` 前缀） |
 | `builder_model` | `glm-5.2` | builder（主会话，有状态） |
 | `explorer_model` | `deepseek-v4-flash` | explorer（subagent，无状态，调研） |
 | `checker_model` | `kimi-k2.7-code` | checker（subagent，无状态，审查） |
 
-> **注意**：subagent 的模型在 `opencode.json` 的 `agent` 段配置（`"explorer": {"model": "Gateway/deepseek-v4-flash"}`、`"checker": {"model": "Gateway/kimi-k2.7-code"}`），json 会覆盖 markdown agent 的同名字段。agent 文件（`explorer.md`/`checker.md`）的 frontmatter **不写 model**。修改角色模型时只需改 `opencode.json` 一处。
+> **注意**：subagent 的模型在 `opencode.json` 的 `agent` 段配置（`"explorer": {"model": "gateway/deepseek-v4-flash"}`、`"checker": {"model": "gateway/kimi-k2.7-code"}`），json 会覆盖 markdown agent 的同名字段。agent 文件（`explorer.md`/`checker.md`）的 frontmatter **不写 model**。修改角色模型时只需改 `opencode.json` 一处。
 
 ## 外部调研工具（MCP）
 
 | key | 默认值 | 说明 |
 |-----|--------|------|
-| `search_mcp` | `websearch` | 网络搜索 MCP server（Tavily） |
+| `search_mcp` | `websearch_tavily` | 网络搜索 MCP server（Tavily） |
 | `docs_mcp` | `context7` | 技术文档查询 MCP server（Context7） |
 
 > 两个 MCP 已配置在 `~/.config/opencode/opencode.json` 的 `mcp` 段，explorer 直接调用对应工具，无需额外 CLI。
