@@ -17,11 +17,12 @@
 | key | 默认值 | 说明 |
 |-----|--------|------|
 | `provider` | `gateway` | 模型 provider（opencode 的 `provider/model` 前缀） |
-| `builder_model` | `glm-5.2` | builder（主会话，有状态） |
-| `explorer_model` | `deepseek-v4-flash` | explorer（subagent，无状态，调研） |
-| `checker_model` | `kimi-k2.7-code` | checker（subagent，无状态，审查） |
+| `builder_model` | `glm-5.2` | Oracle（主会话，有状态，调度者；变量名沿用 builder_model 兼容既有配置） |
+| `explorer_model` | `deepseek-v4-flash` | Explorer（subagent，无状态，调研） |
+| `checker_model` | `kimi-k2.7-code` | Checker（subagent，无状态，审查） |
+| `builder_subagent_model` | `glm-5.2` | Builder（subagent，无状态，编码执行；默认与 Oracle 同模型，可独立调整） |
 
-> **注意**：subagent 的模型在 `opencode.json` 的 `agent` 段配置（`"explorer": {"model": "gateway/deepseek-v4-flash"}`、`"checker": {"model": "gateway/kimi-k2.7-code"}`），json 会覆盖 markdown agent 的同名字段。agent 文件（`explorer.md`/`checker.md`）的 frontmatter **不写 model**。修改角色模型时只需改 `opencode.json` 一处。
+> **注意**：subagent 的模型在 `opencode.json` 的 `agent` 段配置（`"explorer": {"model": "gateway/deepseek-v4-flash"}`、`"checker": {"model": "gateway/kimi-k2.7-code"}`、`"builder": {"model": "gateway/glm-5.2"}`），json 会覆盖 markdown agent 的同名字段。agent 文件（`explorer.md`/`checker.md`/`builder.md`）的 frontmatter **不写 model**。修改角色模型时只需改 `opencode.json` 一处。
 
 ## 外部调研工具（MCP）
 
