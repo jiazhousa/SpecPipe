@@ -1,10 +1,10 @@
 # 质量门环节（S-S10 / I-S7，checker 全面审查）
 
-**所有编码路径（Story / Issue）在提交到远端前必须经过质量门终检。** 质量门由 **checker** 在 `QUALITY_GATE` 状态一次性执行全面审查（原「编码后 check」与「质量门 4 项检查」合并），builder 不再自查——checker 用不同模型交叉验证，把代码质量、实现一致性、commit、编译、测试、文档归档的所有问题一次性列出，builder 修复后重新递交，全量重审直至 PASS。
+**所有编码路径（Story / Issue）在提交到远端前必须经过质量门终检。** 质量门由 **checker** 在 `QUALITY_GATE` 状态一次性执行全面审查（原「编码后 check」与「质量门 4 项检查」合并），Builder 不再自查——checker 用不同模型交叉验证，把代码质量、实现一致性、commit、编译、测试、文档归档的所有问题一次性列出，Oracle 派发 Builder 修复后重新递交，全量重审直至 PASS。
 
-`.stage` → `QUALITY_GATE`（builder 设置），checker 审查完成后：
+`.stage` → `QUALITY_GATE`（Oracle 设置），checker 审查完成后：
 - **PASS** → `.stage` → `DONE`
-- **REJECT** → `.stage` → `WORKING`，builder 修复后重新递交，全量重审
+- **REJECT** → `.stage` → `WORKING`，Oracle 派发 Builder 修复后重新递交，全量重审
 
 ## 全面审查清单（7 项）
 
@@ -45,7 +45,7 @@
 
 - **新增测试覆盖** — 若 impl 文档声明了测试计划，确认新增测试已实现
 - **既有测试回归** — 确认本次改动未破坏既有测试（fence 结果为依据）
-- **失败处理** — 预期内行为变更（如接口签名调整）→ 提示 builder 更新测试适配；意外回归 → 提示 builder 修复代码
+- **失败处理** — 预期内行为变更（如接口签名调整）→ 提示 Builder 更新测试适配；意外回归 → 提示 Builder 修复代码
 - **fence 失败用例逐一分析** — 若 fence 有失败用例，需逐一分析是否为本次改动引起的回归，不能笼统跳过
 
 ### 7. 文档归档与 AGENTS.md（Story / Epic 适用，Issue 跳过）
@@ -68,15 +68,15 @@
 
 7 项检查全部通过后：
 1. checker 写审查报告 + 更新 `.stage` → `DONE`
-2. checker stdout 回传 PASS 结论供 builder 决策
-3. builder agent 提示用户「质量门通过，可以推送分支并创建 MR」，**不自动推送**（推送和 MR 由用户决定或用户明确要求时执行）
+2. checker stdout 回传 PASS 结论供 Oracle 决策
+3. Oracle 提示用户「质量门通过，可以推送分支并创建 MR」，**不自动推送**（推送和 MR 由用户决定或用户明确要求时执行）
 
 ## 质量门失败
 
 任一检查项失败：
 - checker 写审查报告（列出所有问题）+ 更新 `.stage` → `WORKING`
-- builder 对报告中的问题做最终判定：确信是真缺陷的修复；确信是误判的可跳过（需在 `AGENTS.md` 追加时记录跳过原因）。宁缺毋滥——存疑的默认修复
-- builder 修复后重新递交 checker，**全量重审**（不增量，确保收敛）
+- Oracle 对报告中的问题做最终判定：确信是真缺陷的派发 Builder 修复；确信是误判的可跳过（需在 `AGENTS.md` 追加时记录跳过原因）。宁缺毋滥——存疑的默认修复
+- Oracle 派发 Builder 修复后重新递交 checker，**全量重审**（不增量，确保收敛）
 - 连续 3 轮质量门失败 → 提示用户人工介入
 
 ## 质量门报告格式

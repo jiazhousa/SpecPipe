@@ -8,10 +8,10 @@
 
 | 角色 | 模型 | 类型 | 职责 |
 |------|------|------|------|
-| **Oracle** | `glm-5.2` | 主会话（有状态，调度者） | 工作流状态机、需求访谈与拆解、spec/impl 产出、任务切分与派发、冲突调节与进度把控。不直接编码 |
-| **Explorer** | `deepseek-v4-flash` | subagent（无状态，只读） | 代码库调研 + 外部技术调研 |
-| **Checker** | `kimi-k2.7-code` | subagent（无状态，可写 reviews/ 与 .stage、可执行编译/测试） | 质量卡点：全面审查 + 写报告 + 更新状态 |
-| **Builder** | `glm-5.2` | subagent（无状态，可并行） | 按 impl.md 任务书编码执行 + 最小自验 + 标准报告 |
+| **Oracle** | `glm-5.3`（variant `max`） | 主会话（有状态，调度者） | 工作流状态机、需求访谈与拆解、spec/impl 产出、任务切分与派发、冲突调节与进度把控。不直接编码 |
+| **Explorer** | `deepseek-v4-flash`（variant `high`） | subagent（无状态，只读） | 代码库调研 + 外部技术调研 |
+| **Checker** | `deepseek-v4-flash`（variant `max`） | subagent（无状态，可写 reviews/ 与 .stage、可执行编译/测试） | 质量卡点：全面审查 + 写报告 + 更新状态 |
+| **Builder** | `glm-5.3`（variant `high`） | subagent（无状态，可并行） | 按 impl.md 任务书编码执行 + 最小自验 + 标准报告 |
 
 > Explorer/Checker/Builder 三者平级、互不调用，所有流转经 Oracle；subagent 遇阻塞报告 BLOCKED 反馈 Oracle 决策。Oracle 按 impl.md 切分文件集不相交的任务块后可并行派发多个 Builder。
 
@@ -46,11 +46,11 @@
 }
 ```
 
-agent 文件（`explorer.md`、`checker.md`）仍需手动复制（opencode 暂不支持 agent 远程安装）：
+agent 文件（`oracle.md` 主会话 + `explorer.md`/`checker.md`/`builder.md` 三个 subagent）仍需手动复制（opencode 暂不支持 agent 远程安装）：
 
 ```bash
 mkdir -p ~/.config/opencode/agents
-cp agents/explorer.md agents/checker.md ~/.config/opencode/agents/
+cp agents/oracle.md agents/explorer.md agents/checker.md agents/builder.md ~/.config/opencode/agents/
 ```
 
 ### 手动复制安装
@@ -60,20 +60,21 @@ cp agents/explorer.md agents/checker.md ~/.config/opencode/agents/
 mkdir -p ~/.config/opencode/skills/specpipe
 cp -r specpipe/* ~/.config/opencode/skills/specpipe/
 
-# 2. agents
+# 2. agents（oracle 主会话 + 3 个 subagent）
 mkdir -p ~/.config/opencode/agents
-cp agents/explorer.md agents/checker.md ~/.config/opencode/agents/
+cp agents/oracle.md agents/explorer.md agents/checker.md agents/builder.md ~/.config/opencode/agents/
 ```
 
 重启 opencode 后生效。
 
-**角色模型配置**：agent 文件的 frontmatter 不写 model，模型统一在 `opencode.json` 的 `agent` 段配置（json 覆盖同名 markdown agent 的 model 字段）：
+**角色模型配置**：subagent 文件的 frontmatter 不写 model，模型统一在 `opencode.json` 的 `agent` 段配置（json 覆盖同名 markdown agent 的 model 字段）；Oracle 主会话的模型在 `agents/oracle.md` frontmatter 定义：
 
 ```json
 {
   "agent": {
-    "explorer": { "model": "gateway/deepseek-v4-flash" },
-    "checker": { "model": "gateway/kimi-k2.7-code" }
+    "explorer": { "model": "gateway/deepseek-v4-flash", "variant": "high", "temperature": 0.1 },
+    "checker": { "model": "gateway/deepseek-v4-flash", "variant": "max", "temperature": 0.1 },
+    "builder": { "model": "gateway/glm-5.3", "variant": "high", "temperature": 0.1 }
   }
 }
 ```
@@ -83,7 +84,7 @@ cp agents/explorer.md agents/checker.md ~/.config/opencode/agents/
 ```bash
 mkdir -p .opencode/skills/specpipe .opencode/agents
 cp -r specpipe/* .opencode/skills/specpipe/
-cp agents/explorer.md agents/checker.md .opencode/agents/
+cp agents/oracle.md agents/explorer.md agents/checker.md agents/builder.md .opencode/agents/
 ```
 
 ## 配置
@@ -94,7 +95,10 @@ cp agents/explorer.md agents/checker.md .opencode/agents/
 |--------|--------|------|
 | `wf` | `.specpipe` | 工作流产出根目录 |
 | `provider` | `gateway` | 模型 provider |
-| `builder_model` / `explorer_model` / `checker_model` | `glm-5.2` / `deepseek-v4-flash` / `kimi-k2.7-code` | 三角色模型 |
+| `builder_model` | `glm-5.3`（variant `max`） | Oracle 主会话模型（变量名沿用 builder_model 兼容既有配置） |
+| `explorer_model` | `deepseek-v4-flash`（variant `high`） | Explorer subagent 模型 |
+| `checker_model` | `deepseek-v4-flash`（variant `max`） | Checker subagent 模型 |
+| `builder_subagent_model` | `glm-5.3`（variant `high`） | Builder subagent 模型 |
 | `search_mcp` / `docs_mcp` | `websearch` / `context7` | 外部调研 MCP |
 | `main_branch` / `release_branch` / `master_branch` | `develop` / `release` / `master` | Git 分支策略 |
 
@@ -118,7 +122,7 @@ cp agents/explorer.md agents/checker.md .opencode/agents/
 
 ## 使用
 
-向 builder 提出开发需求即自动进入工作流，或显式说"走编码工作流"。
+向 Oracle（主会话）提出开发需求即自动进入工作流，或显式说"走编码工作流"。
 
 ## License
 
