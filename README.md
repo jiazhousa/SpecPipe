@@ -1,16 +1,19 @@
 # SpecPipe
 
-基于 [opencode](https://opencode.ai) 的编码工作流 skill（spec 驱动流水线）。builder agent 自动驱动 **spec → impl → coding → 质量门** 全流程，用户只需在**访谈澄清、分级确认、审查不通过**时参与。需求按规模自动分流为 **Epic / Story / Issue** 三条路径。
+基于 [opencode](https://opencode.ai) 的编码工作流 skill（spec 驱动流水线）。Oracle（主会话调度者）自动驱动 **spec → impl → coding → 质量门** 全流程，用户只需在**访谈澄清、分级确认、审查不通过**时参与。需求按规模自动分流为 **Epic / Story / Issue** 三条路径。
 
 ## 架构
 
-三角色协作（opencode 原生 subagent）：
+四角色协作（Oracle 主会话 + opencode 原生 subagent × 3）：
 
 | 角色 | 模型 | 类型 | 职责 |
 |------|------|------|------|
-| **builder** | `glm-5.2` | 主会话（有状态） | 驱动全流程、spec/impl 产出、编码 |
-| **explorer** | `deepseek-v4-flash` | subagent（无状态，只读） | 代码库调研 + 外部技术调研 |
-| **checker** | `kimi-k2.7-code` | subagent（无状态，可写 reviews/ 与 .stage、可执行编译/测试） | 质量卡点：全面审查 + 写报告 + 更新状态 |
+| **Oracle** | `glm-5.2` | 主会话（有状态，调度者） | 工作流状态机、需求访谈与拆解、spec/impl 产出、任务切分与派发、冲突调节与进度把控。不直接编码 |
+| **Explorer** | `deepseek-v4-flash` | subagent（无状态，只读） | 代码库调研 + 外部技术调研 |
+| **Checker** | `kimi-k2.7-code` | subagent（无状态，可写 reviews/ 与 .stage、可执行编译/测试） | 质量卡点：全面审查 + 写报告 + 更新状态 |
+| **Builder** | `glm-5.2` | subagent（无状态，可并行） | 按 impl.md 任务书编码执行 + 最小自验 + 标准报告 |
+
+> Explorer/Checker/Builder 三者平级、互不调用，所有流转经 Oracle；subagent 遇阻塞报告 BLOCKED 反馈 Oracle 决策。Oracle 按 impl.md 切分文件集不相交的任务块后可并行派发多个 Builder。
 
 > 角色模型、provider、工作流根目录、Git 分支策略等全部可配置，见 `specpipe/config.md`。
 
