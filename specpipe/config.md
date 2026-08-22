@@ -21,8 +21,9 @@
 | `explorer_model` | `deepseek-v4-flash`（variant `high`） | Explorer（subagent，无状态，调研） |
 | `checker_model` | `deepseek-v4-flash`（variant `max`） | Checker（subagent，无状态，审查） |
 | `builder_subagent_model` | `glm-5.3`（variant `high`） | Builder（subagent，无状态，编码执行） |
+| `looker_model` | 不配置（可选） | Looker（subagent，无状态，图片解析）。**仅当 Oracle 模型不支持图片输入时部署**，配任意多模态模型（按各 provider 实际模型名，如 `qwen-3.8-max`、`kimi-k3`、`glm-5v-turbo` 等）；若 Oracle 本身是多模态模型则无需本角色 |
 
-> **注意**：subagent 的模型在 `opencode.json` 的 `agent` 段配置（`"explorer": {"model": "...", "variant": "high", "temperature": 0.1}`、`"checker": {"model": "...", "variant": "max", "temperature": 0.1}`、`"builder": {"model": "...", "variant": "high", "temperature": 0.1}`），json 会覆盖 markdown agent 的同名字段。agent 文件（`explorer.md`/`checker.md`/`builder.md`）的 frontmatter **不写 model**（variant/temperature 等推理参数同样以 opencode.json 为准）。修改角色模型时只需改 `opencode.json` 一处。
+> **注意**：subagent 的模型在 `opencode.json` 的 `agent` 段配置（`"explorer": {"model": "...", "variant": "high", "temperature": 0.1}`、`"checker": {"model": "...", "variant": "max", "temperature": 0.1}`、`"builder": {"model": "...", "variant": "high", "temperature": 0.1}`，可选 `"looker": {"model": "<多模态模型>"}`），json 会覆盖 markdown agent 的同名字段。agent 文件（`explorer.md`/`checker.md`/`builder.md`/`looker.md`）的 frontmatter **不写 model**（variant/temperature 等推理参数同样以 opencode.json 为准）。修改角色模型时只需改 `opencode.json` 一处。
 
 ## 外部调研工具（MCP）
 

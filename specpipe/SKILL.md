@@ -1,6 +1,6 @@
 ---
 name: specpipe
-description: 编码工作流 — Oracle（主会话调度者）驱动 spec→impl→coding→质量门全流程，用户只在访谈澄清、分级确认、审查不通过时参与。四角色架构：Oracle（主会话，调度者）+ Explorer（只读子代理调研）+ Checker（质量卡点子代理，写报告并更新状态）+ Builder（编码执行子代理，按 impl.md 任务书编码）。
+description: 编码工作流 — Oracle（主会话调度者）驱动 spec→impl→coding→质量门全流程，用户只在访谈澄清、分级确认、审查不通过时参与。四角色架构：Oracle（主会话，调度者）+ Explorer（只读子代理调研）+ Checker（质量卡点子代理，写报告并更新状态）+ Builder（编码执行子代理，按 impl.md 任务书编码）；可选 Looker（视觉解析子代理，仅当 Oracle 模型不支持图片输入时部署）。
 license: MIT
 compatibility: opencode
 metadata:
@@ -13,7 +13,7 @@ metadata:
 
 Oracle（主会话调度者）驱动的编码流程。用户只需在**访谈澄清、分级确认、审查不通过**时参与，其余全自动推进。工作流根据需求规模自动分流为 Epic / Story / Issue 三条路径。
 
-> **opencode 基底**：本 skill 基于 opencode 的四角色架构。**Oracle 是主会话**（有状态，承载状态机、用户访谈与任务调度，不直接编码）；Explorer/Checker/Builder 是**无状态 subagent**，三者平级、互不调用，均由 Oracle 通过 `task` 工具调用（`subagent_type` 取 agent 文件名：`explorer` / `checker` / `builder`），代理定义在 `~/.config/opencode/agents/`。
+> **opencode 基底**：本 skill 基于 opencode 的四角色架构。**Oracle 是主会话**（有状态，承载状态机、用户访谈与任务调度，不直接编码）；Explorer/Checker/Builder 是**无状态 subagent**，三者平级、互不调用，均由 Oracle 通过 `task` 工具调用（`subagent_type` 取 agent 文件名：`explorer` / `checker` / `builder`），代理定义在 `~/.config/opencode/agents/`。另有**可选的 Looker**（视觉解析 subagent，`looker`）：仅当 Oracle 的模型不支持图片输入时部署，专职图片解析（详见「角色与协作模式」章节）。
 
 > **路径约定**：本文档中所有工作流产出路径均使用 `{wf}/` 作为工作流根目录占位符，默认映射为 **`.specpipe/`**（项目根目录下，可在 `config.md` 中修改）：
 > - `{wf}/plans/{topic}/spec.md` = `.specpipe/plans/{topic}/spec.md`
@@ -556,12 +556,14 @@ ISSUE_IMPL_DRAFT → ISSUE_IMPL_REVIEWING → ISSUE_IMPL_APPROVED [不阻塞] �
 | **Explorer**（调研者） | `{{explorer_model}}`（{{provider}}） | subagent（`task` 工具） | **无状态**（每次新建） | 上游 Oracle → 下游 Oracle | 内部代码库调研 + 外部技术调研（事实清单，区分事实/推断） | 调研任务书（需求 + 范围 + 代码库路径） | 结构化调研报告（带 文件:行号），不写文件 |
 | **Checker**（检查者） | `{{checker_model}}`（{{provider}}） | subagent（`task` 工具） | **无状态**（每次新建） | 上游 Oracle（间接：Builder 产出被审）→ 下游 Oracle | 质量卡点：完成状态 check + 交付质量 check + 质量门全面审查（含编译/测试执行）+ 审查结果落定 | 审查任务书（类型 + 对象路径 + 基准材料） | 审查报告（reviews/ 落盘）+ `.stage` 更新 |
 | **Builder**（构建者） | `{{builder_subagent_model}}`（{{provider}}） | subagent（`task` 工具） | **无状态**（每次新建，可并行） | 上游 Oracle → 下游 Oracle（产出终由 Checker 审） | 按 impl.md 任务书编码执行：读文档 → 写码 → 最小自验 → 报告。不做需求分析/方案设计/质量审查 | 编码任务书（impl.md 章节 + worktree + 验证命令） | 代码变更（worktree 内）+ 标准执行报告，不写文件 |
+| **Looker**（视觉解析者，可选） | `{{looker_model}}`（多模态） | subagent（`task` 工具） | **无状态**（每次新建） | 上游 Oracle → 下游 Oracle | 图片解析：截图/设计稿/架构图/报错照片 → 结构化文字描述（含"无法确认项"，禁止编造）。**仅当 Oracle 模型不支持图片输入时部署**；Oracle 为多模态模型时无需本角色 | 解析任务书（图片绝对路径 + 解析目标） | 结构化图片描述，不写文件 |
 
 > **角色定位说明**：
 > - **Oracle 是有状态的调度者** — 主会话长期存在，承载 `.stage` 状态机、用户访谈、文档产出与任务调度。Oracle 的 context 花在调度决策、跨 Story 记忆与用户交互上，不被单个 Story 的代码细节塞满。spec/impl 设计、worktree/commit/归档等收尾工作由 Oracle 亲自完成（这些需要全局视野与有状态上下文）。
 > - **Explorer/Checker/Builder 平级，互不调用** — 三者均只与 Oracle 通信；subagent 之间的任何流转（如 Builder 要 Checker 复核）都须经 Oracle 派发。subagent 遇到阻塞（依赖缺失/设计冲突/权限不足）时，在结果报告中标注 BLOCKED + 原因反馈 Oracle，由 Oracle 决策：拆任务 / 改方案 / 升级问用户。
 > - **无状态 subagent** — 每次调用全新上下文，看不到 Oracle 的过程性思考，只看到显式传入的材料。这正是交叉验证的价值：Checker 用不同模型（kimi）审查 Builder（glm）的产出，避免单模型自审盲区。
 > - **Builder 可并行** — Oracle 按 impl.md 预先切分**文件集不相交**的任务块后，可并行派发多个 Builder。文件级冲突由 Oracle 仲裁（预防优于仲裁：切分时保证不相交）。
+> - **Looker 可选，取决于 Oracle 模型的模态** — specpipe 只是工作流，不限定模型选型。若 Oracle 的模型支持图片输入（如 qwen-3.8-max、kimi-k3 等多模态模型），Oracle 直接 `read` 读图自解，Looker 无需部署；若 Oracle 为纯文本模型（如 glm-5.3），凡涉及图片一律派发 Looker（视觉模型）解析，Oracle 只消费其结构化描述。图片以**文件绝对路径的文字形式**在任务书中传递。
 
 ### 任务书标准（Oracle → Builder 的派发规范）
 
@@ -579,12 +581,13 @@ impl 写不清楚导致 Builder 做错，责任在 Oracle（文档质量）—�
 
 ### subagent 调用规范（核心机制）
 
-Oracle 通过 opencode 的 **`task` 工具**调用 Explorer/Checker/Builder。三个 subagent 定义在 `~/.config/opencode/agents/`：
+Oracle 通过 opencode 的 **`task` 工具**调用 Explorer/Checker/Builder（及可选的 Looker）。subagent 定义在 `~/.config/opencode/agents/`：
 - **explorer.md** — Explorer 定义：只读（edit/bash deny）
 - **checker.md** — Checker 定义：写权限白名单（仅 `.specpipe/reviews/*` 与 `.specpipe/plans/*/.stage`）+ bash 白名单（只读 git + 编译/测试）
 - **builder.md** — Builder 定义：编码执行权限（edit/bash/write），按任务书最小自验
+- **looker.md**（可选）— Looker 定义：只读视觉解析（仅 `read` 工具读图），仅当 Oracle 模型不支持图片输入时部署
 
-**权限前提**：Oracle 调用 `task` 依赖 `permission.task`。若全局 `permission` 有 `"*": "ask"` 等收紧配置，需在 `opencode.json` 显式放行三个 subagent：
+**权限前提**：Oracle 调用 `task` 依赖 `permission.task`。若全局 `permission` 有 `"*": "ask"` 等收紧配置，需在 `opencode.json` 显式放行各 subagent：
 
 ```json
 {
@@ -595,13 +598,16 @@ Oracle 通过 opencode 的 **`task` 工具**调用 Explorer/Checker/Builder。�
           "*": "deny",
           "explorer": "allow",
           "checker": "allow",
-          "builder": "allow"
+          "builder": "allow",
+          "looker": "allow"
         }
       }
     }
   }
 }
 ```
+
+> `looker` 行仅在部署了 Looker 时需要；未部署可删。
 
 默认（无收紧配置）无需声明，task 权限默认 allow。
 

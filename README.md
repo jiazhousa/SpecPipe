@@ -4,7 +4,7 @@
 
 ## 架构
 
-四角色协作（Oracle 主会话 + opencode 原生 subagent × 3）：
+四角色协作（Oracle 主会话 + opencode 原生 subagent × 3），外加一个可选的视觉解析角色：
 
 | 角色 | 模型 | 类型 | 职责 |
 |------|------|------|------|
@@ -12,8 +12,11 @@
 | **Explorer** | `deepseek-v4-flash`（variant `high`） | subagent（无状态，只读） | 代码库调研 + 外部技术调研 |
 | **Checker** | `deepseek-v4-flash`（variant `max`） | subagent（无状态，可写 reviews/ 与 .stage、可执行编译/测试） | 质量卡点：全面审查 + 写报告 + 更新状态 |
 | **Builder** | `glm-5.3`（variant `high`） | subagent（无状态，可并行） | 按 impl.md 任务书编码执行 + 最小自验 + 标准报告 |
+| **Looker**（可选） | 任意多模态模型 | subagent（无状态，只读） | 图片解析：截图/设计稿/架构图/报错照片 → 结构化文字描述 |
 
 > Explorer/Checker/Builder 三者平级、互不调用，所有流转经 Oracle；subagent 遇阻塞报告 BLOCKED 反馈 Oracle 决策。Oracle 按 impl.md 切分文件集不相交的任务块后可并行派发多个 Builder。
+
+> **Looker 是否部署取决于 Oracle 的模型**：specpipe 只是工作流，不限定模型选型。Oracle 若是多模态模型（如 `qwen-3.8-max`、`kimi-k3` 等），可直接读图，Looker 无需存在；Oracle 若是纯文本模型（如 `glm-5.3`），凡涉及图片 Oracle 一律派发 Looker 解析（图片以文件绝对路径的文字形式传递，含"附件失败自动回退"约定——用户直接粘贴图片导致自动 read 报错时，Oracle 从报错参数提取路径转派 Looker）。
 
 > 角色模型、provider、工作流根目录、Git 分支策略等全部可配置，见 `specpipe/config.md`。
 
@@ -46,11 +49,13 @@
 }
 ```
 
-agent 文件（`oracle.md` 主会话 + `explorer.md`/`checker.md`/`builder.md` 三个 subagent）仍需手动复制（opencode 暂不支持 agent 远程安装）：
+agent 文件（`oracle.md` 主会话 + `explorer.md`/`checker.md`/`builder.md` 三个 subagent，及可选的 `looker.md`）仍需手动复制（opencode 暂不支持 agent 远程安装）：
 
 ```bash
 mkdir -p ~/.config/opencode/agents
 cp agents/oracle.md agents/explorer.md agents/checker.md agents/builder.md ~/.config/opencode/agents/
+# 可选：仅当 Oracle 模型不支持图片输入时部署 Looker
+# cp agents/looker.md ~/.config/opencode/agents/
 ```
 
 ### 手动复制安装
@@ -63,6 +68,8 @@ cp -r specpipe/* ~/.config/opencode/skills/specpipe/
 # 2. agents（oracle 主会话 + 3 个 subagent）
 mkdir -p ~/.config/opencode/agents
 cp agents/oracle.md agents/explorer.md agents/checker.md agents/builder.md ~/.config/opencode/agents/
+# 可选：仅当 Oracle 模型不支持图片输入时部署 Looker
+# cp agents/looker.md ~/.config/opencode/agents/
 ```
 
 重启 opencode 后生效。
@@ -74,10 +81,13 @@ cp agents/oracle.md agents/explorer.md agents/checker.md agents/builder.md ~/.co
   "agent": {
     "explorer": { "model": "gateway/deepseek-v4-flash", "variant": "high", "temperature": 0.1 },
     "checker": { "model": "gateway/deepseek-v4-flash", "variant": "max", "temperature": 0.1 },
-    "builder": { "model": "gateway/glm-5.3", "variant": "high", "temperature": 0.1 }
+    "builder": { "model": "gateway/glm-5.3", "variant": "high", "temperature": 0.1 },
+    "looker": { "model": "<任意多模态模型>" }
   }
 }
 ```
+
+> `looker` 行可选：仅当 Oracle 模型不支持图片输入时配置（模型须支持 image 输入）。
 
 ### 项目级安装
 
