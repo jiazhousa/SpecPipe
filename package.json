@@ -1,7 +1,7 @@
 {
   "name": "specpipe",
-  "version": "2.1.0",
-  "description": "基于 opencode 的编码工作流 skill（spec 驱动流水线）：Oracle（主会话调度者）驱动 spec→impl→coding→质量门全流程，四角色协作，需求自动分流为 Epic / Story / Issue",
+  "version": "2.2.0",
+  "description": "基于 opencode 的编码工作流 skill（spec 驱动流水线）：Oracle（主会话调度者）驱动 spec→impl→coding→质量门全流程，四角色协作，需求自动分流为 Epic / Story / Issue；可选 Looker 视觉解析 subagent（仅当 Oracle 模型不支持图片输入时部署）",
   "keywords": ["opencode", "skill", "workflow", "coding", "multi-agent", "spec", "review"],
   "license": "MIT"
 }

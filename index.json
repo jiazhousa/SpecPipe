@@ -2,7 +2,7 @@
   "skills": [
     {
       "name": "specpipe",
-      "version": "2.1.0",
+      "version": "2.2.0",
       "files": [
         "SKILL.md",
         "config.md",
