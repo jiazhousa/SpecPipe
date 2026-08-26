@@ -153,7 +153,7 @@ Epic Spec 终稿格式：
 # Epic Spec: [需求标题]
 ## 背景 | 业务规则 | 验收标准 | 范围边界 | 关键风险
 ## Story 路线图
-### Story 1: [标题] — 优先级 / 依赖 / 预估 / 范围摘要
+### Story 1: [标题] — 优先级 / 依赖 / 预估 / 范围摘要（无依赖且文件集不相交的 Story 标注「可并行」）
 ### Story 2: ...
 ## 交付顺序与里程碑
 ```
@@ -185,6 +185,8 @@ task(
 ### Epic 进度推进
 
 用户放行后，按路线图中的交付顺序，**逐个 Story 从 S0 开始走完整 Story 路径**（每个 Story 独立 topic 目录，独立调研/spec/impl/审查）。
+
+> **无依赖 Story 可并行（可选）**：路线图中标注「无依赖」且文件集不相交的 Story（如前后端边界清晰、各自独立 worktree），可**并行推进多条 Story 流水线**（各自独立 topic/.stage/worktree/Builder，Epic Spec 路线图在 E-S3 就标注哪些 Story 可并行）。代价是用户访谈会交织（多个 Story 的澄清/放行请求需按 topic 区分），调度复杂度上升——启用前需向用户说明并确认。有依赖关系的 Story 仍严格串行。
 
 > **Epic 下 Story 的 S2 是确认性判定**：Epic Spec 已预分类各子需求为 Story 级，因此 Epic 下 Story 的 S2 不需要重新论证等级，仅确认"该子需求仍为 Story 级、范围未偏移"即可推进。若 S0/S1 发现该子需求实际超出 Story 范围，Oracle 应知会用户并评估是否回退 Epic Spec 重新拆分。
 
@@ -301,9 +303,12 @@ Oracle 将 impl 描述的改动**派发给 Builder（subagent）执行**，自�
    - 每个任务块的 prompt 遵循**任务书标准结构**：执行 impl.md 的哪些章节 + worktree 路径 + **最小验证命令**（如 `mvn compile -pl <模块>` / `-Dtest=<指定类>`，见「任务书标准」）
    - 可多块并行派发（`task` 工具并行调用 Builder）；串行小任务 Oracle 可酌情自己直接执行（如 3 文件以内的小改动，减少调度开销）
 4. **进度把控与冲突调节**：收集各 Builder 报告；BLOCKED 项由 Oracle 决策（补充任务书 / 改方案 / 升级问用户）；并行 Builder 报告的文件级冲突由 Oracle 仲裁
-5. **收尾统一验证**：全部任务块完成后，Oracle 统一执行全量验证（模块全量单测；**E2E / fence 按 Story 收尾一次的节奏执行**，不在单个任务块中重复跑）
+5. **收尾统一验证（fence 后台化，与质量门并行）**：全部任务块完成后即代码事实冻结，Oracle **立即在 tmux 后台启动 fence**（全量单测 + E2E，按 Story 收尾一次的节奏，不在单个任务块中重复跑），**不阻塞等待**——同时继续步骤 6/7；fence 结论由 Oracle 在**汇合点**（Checker 审查完成时）核实 `test-fence-reports/summary.txt`
 6. **文档归档与 AGENTS.md**：Oracle 把 spec.md/impl.md 归档，关键 feature 追加到项目根 `AGENTS.md`
-7. Oracle 整理 commit（本地 commit，每个 commit 能独立编译），置 `.stage` → `QUALITY_GATE`，递交 **Checker**（subagent）做全面审查，直至 PASS → `.stage` → `DONE`
+7. Oracle 整理 commit（本地 commit，每个 commit 能独立编译），置 `.stage` → `QUALITY_GATE`，**随即派发 Checker**（与后台 fence 并行）做全面审查。**汇合点**：Checker 与 fence 均完成 → 双 PASS → `.stage` → `DONE`；任一失败按下述增量重跑规则处理后重新汇合：
+   - Checker REJECT + 修复仅涉测试代码/注释/文档 → fence 不重跑，Checker 复审新 diff 即可
+   - 修复涉及生产代码 → fence 重跑（tmux 后台）+ Checker 复审，再次汇合
+   - fence REJECT → 修复后 fence 必重跑（串行模式下同样如此，并行未引入额外成本）
 
 > **任务书标准**（Oracle 派发 Builder 的 prompt 规范，详见「角色与协作模式」）：impl.md 是唯一事实源——prompt 不内嵌实现细节，只指定章节 + 验证命令 + 交付物。impl 写不清楚导致 Builder 做错，责任在 Oracle（文档质量），这倒逼 impl 阶段做实。
 
@@ -371,7 +376,7 @@ Oracle 将 `.stage` → `ISSUE_IMPL_REVIEWING`，然后调用 **Checker**（suba
 2. **环境检查**：按「编码环境（worktree）」章节创建 worktree，从 develop 分支拉取新分支（分支类型根据 Issue 性质命名：`dev/fix/*`、`dev/feat/*`、`dev/refactor/*` 等，见 config.md）
 3. **派发编码**：改动 ≤3 文件的 Issue，Oracle 可直接自己执行（调度开销大于收益）；更大改动派发 Builder（任务书标准同 S-S9）
 4. Oracle 整理 commit（本地 commit，每个 commit 能独立编译）
-5. Oracle 置 `.stage` → `QUALITY_GATE`，递交 **Checker**（subagent）做全面审查，直至 PASS → `.stage` → `DONE`
+5. **收尾验证与质量门并行**（同 S-S9 步骤 5/7）：代码冻结后 tmux 后台启动 fence，随即置 `.stage` → `QUALITY_GATE` 并派发 **Checker**（subagent）全面审查；汇合点核实 fence `summary.txt`，双 PASS → `.stage` → `DONE`；增量重跑规则见 S-S9 步骤 7
 
 > **质量门全面审查**：同 S-S9，Checker 一次性执行全面审查（Issue 跳过文档归档项）。审查报告由 Checker **直接写**至 `{wf}/reviews/{topic}-quality-gate-revision-{N}.md`，并更新 `.stage`。
 
@@ -423,13 +428,15 @@ worktree 目录位于项目根之外（`~/.local/share/opencode/worktree/`），
 
 > **为何不用 opencode 内置 worktree API**：opencode 的 `@opencode/Worktree` 服务（`/experimental/worktree`）虽能自动注册沙盒，但它属于 experimental API（CLI/TUI 无入口、命名规约 `opencode/{name}` 与本文分支规约不一致、接口可能变动），在 skill 中调用不稳。采用 bash `git worktree` + external_directory 白名单更简单可靠。
 
-### 环境初始化
+### 环境初始化（可提前至审查阶段预热）
 
 进入 worktree 后，自动检测并安装依赖（best-effort）：
 1. `package.json` → `npm install`
 2. `pom.xml` → `mvn compile`
 3. `requirements.txt` → `pip install -r requirements.txt`
 4. 失败 → 提示用户手动安装后继续
+
+**预热时机（并行优化）**：worktree 创建与依赖安装不依赖审查结论，可在 **S-S8 / I-S5 派发 Checker 审查的同时后台执行**（tmux：`git worktree add` + 依赖安装 + 编译预热），审查 PASS 后 Builder 即刻开工，省去 3-8 分钟热身。审查 REJECT 时废弃 worktree（`git worktree remove --force` + `git branch -D`，成本≈0）。注意：`.stage` 仍须为 `IMPL_APPROVED`/`ISSUE_IMPL_APPROVED` 才能开始编码——预热只是环境准备，不是编码放行。
 
 ### 编码与同步
 
@@ -463,8 +470,8 @@ git branch -d $BRANCH
 1. **实现与 impl 一致性** — 实际改动是否与 impl 文档描述一致
 2. **代码质量（OCR 流水线）** — 规则注入 + 逐文件审查 + 行级锚定 + 事实校验 + 精度优先，附质量评分（critical -25 / high -12 / medium -5 / low -2）
 3. **commit 信息** — 每个 commit message 简洁清晰、符合项目既有风格
-4. **整体编译通过** — 在 worktree 中执行编译命令（如 `mvn compile`）
-5. **受影响模块测试（fence）** — **必须执行项目的测试围栏脚本（如 `./scripts/run-test-fence.sh`），不得以"无新增测试"为由跳过**。若项目无 fence 脚本，则执行受影响模块的测试命令（如 `mvn test -pl <模块>`）。fence 结果摘要需附入审查报告
+4. **整体编译通过** — 优先引用并行执行的 fence 日志中的编译结果（fence 脚本含编译前置步骤）；fence 不可用或未启动时，才在 worktree 中自行执行编译命令（如 `mvn compile`）
+5. **受影响模块测试（fence）** — **必须执行项目的测试围栏脚本（如 `./scripts/run-test-fence.sh`），不得以"无新增测试"为由跳过**。若项目无 fence 脚本，则执行受影响模块的测试命令（如 `mvn test -pl <模块>`）。**fence 由 Oracle 在代码冻结后 tmux 后台启动，与 Checker 审查并行**——Checker 执行时 fence 可能尚未跑完，报告第 5 项标注「fence 并行执行中，结论由 Oracle 于汇合点核实 `test-fence-reports/summary.txt`」并引用该路径；Oracle 汇合时核实 PASS 方可置 DONE（summary.txt 是脚本生成的客观产物，审计链完整）
 6. **测试覆盖与回归** — 新增测试已实现，既有测试未破坏。fence 失败用例需逐一分析是回归还是预期行为变更
 7. **文档归档与 AGENTS.md**（Story/Epic 适用，Issue 跳过）— spec/impl 已归档，关键 feature 已记录到项目根 `AGENTS.md`
 
@@ -520,7 +527,7 @@ ISSUE_IMPL_DRAFT → ISSUE_IMPL_REVIEWING → ISSUE_IMPL_APPROVED [不阻塞] �
 - **E-S5 审查通过后阻塞** — `EPIC_SPEC_USER_AUDIT` 状态下须用户放行才结束 Epic 流程
 - **I-S5 审查通过后不阻塞** — `ISSUE_IMPL_APPROVED` 后直接进入编码（Issue 无 Spec 阶段，无用户放行环节）
 - **S-S8 通过后不阻塞** — `IMPL_APPROVED` 后直接进入 S-S9 编码
-- **质量门是终检（Checker 全面审查）** — `QUALITY_GATE` 状态下 Checker 一次性执行全面审查（代码质量 OCR + impl 一致性 + commit 信息 + 整体编译 + 受影响模块测试 + 测试覆盖回归 + 文档归档），PASS → `DONE`，REJECT → `WORKING`
+- **质量门是终检（Checker 全面审查）** — `QUALITY_GATE` 状态下 Checker 一次性执行全面审查（代码质量 OCR + impl 一致性 + commit 信息 + 整体编译 + 受影响模块测试 + 测试覆盖回归 + 文档归档），PASS → `DONE`，REJECT → `WORKING`。fence 由 Oracle 后台并行启动，`DONE` 的前置条件 = Checker PASS **且** Oracle 汇合核实 fence PASS
 - **Issue 编码中升级** — 若发现改动超预期，暂停编码，清理 `.stage` 文件，保留 issue-impl 作为参考，回 S2 重新分级
 - **S2 统一调度点允许等级重调整** — 调研+访谈结束后，Oracle 可基于实际发现提议升级或降级，经用户确认后调整路径
 - **SPEC_OVERTURN 回 S2 不重跑调研** — 任何阶段审查推翻 spec（或 Issue 编码中发现需升级）回 S2 时，**不重跑 S0/S1**，仅基于已有产出（spec/impl/issue-impl）和访谈结果重新论证等级。若已有产出不足以支撑新等级判定，Oracle 可补充定向调研（仅针对新等级的判定依据，非全量重跑）
@@ -645,7 +652,7 @@ Explorer subagent 使用 opencode 已配置的 MCP 进行外部调研：
 4. **记忆分三层，无独立记忆文件** — ①全局层：`~/.config/opencode/AGENTS.md`（跨项目个人偏好/规则，静态维护）；②项目层：项目根 `AGENTS.md`（关键 feature 记录，质量门第 7 项文档归档时追加）；③任务层：`{wf}/plans/{topic}/` 下的 spec/impl 文档（任务态，随任务生灭）。不设 `save_memory` 工具、不写 `.opencode/memory/`、不写 MEMORY.md
 5. **所有文档和记忆使用中文**
 6. **S2 分级判定是必经环节且允许重调整** — 任何需求都需经过 S2 分级；S2 是统一调度点，Oracle 可基于调研+访谈的实际发现提议升级或降级，经用户确认后调整路径
-7. **Epic 先有 Epic Spec 再拆 Story** — Epic 路径先产出 Epic 级规格文档（含 Story 路线图），放行后逐个 Story 从 S0 走完整 Story 路径
+7. **Epic 先有 Epic Spec 再拆 Story** — Epic 路径先产出 Epic 级规格文档（含 Story 路线图），放行后逐个 Story 从 S0 走完整 Story 路径；路线图中无依赖且文件集不相交的 Story 经用户确认后可并行推进
 8. **Epic 下 Story 独立 topic** — 每个 Story 有独立的 spec/impl/审查/记忆，Epic Spec 是它们的总纲
 9. **Issue 不走 Spec 阶段** — Issue 级别需求在 S1 前置访谈中聊清所有改动点，S2 确认后直接产出 Impl 文档；无 Spec 文档、无 Spec 审查
 10. **Issue 可升级** — 编码中发现超预期，暂停并提示用户升级为 Story 级，重新分级
@@ -657,7 +664,7 @@ Explorer subagent 使用 opencode 已配置的 MCP 进行外部调研：
     - S-S9/I-S6 质量门 = **全面审查**（Checker 一次性执行：impl 一致性 + 代码质量 OCR 流水线 + commit 信息 + 整体编译 + 受影响模块测试 + 测试覆盖回归 + 文档归档，附质量评分 critical -25 / high -12 / medium -5 / low -2）
 12. **S-S8 / I-S5 通过后不阻塞** — Impl 审查通过后直接进入编码，无须用户再次确认
 13. **编码必须在新 worktree + 新分支** — S-S9 和 I-S6 均需创建 git worktree，从 develop 拉取新分支（feature/fix/refactor），不直接在 develop 上编码
-14. **质量门是所有编码路径的终检** — S-S10 / I-S7 由 Checker 在 `QUALITY_GATE` 状态一次性执行全面审查（impl 一致性、代码质量 OCR、commit 信息、整体编译、受影响模块测试、测试覆盖回归、文档归档），PASS → `DONE`，REJECT → `WORKING` 修复后全量重审
+14. **质量门是所有编码路径的终检** — S-S10 / I-S7 由 Checker 在 `QUALITY_GATE` 状态一次性执行全面审查（impl 一致性、代码质量 OCR、commit 信息、整体编译、受影响模块测试、测试覆盖回归、文档归档），PASS → `DONE`，REJECT → `WORKING` 修复后全量重审。**fence 与质量门并行**：代码冻结后 Oracle 后台启动 fence、随即派发 Checker，汇合点核实 fence 结果后才能置 DONE；修复后按增量重跑规则（生产代码改动 → fence 重跑；仅测试/注释/文档 → 不重跑）
 15. **本地独立代码审查（LCR）** — 用户说"审查代码"、"review 代码"、"代码质量审查"等（非功能开发语境）时，Oracle 不走 specpipe 状态机，直接：①获取 git diff（`git diff` / `git diff --staged` / `git diff <from>..<to>`，按用户意图选择）；②以 `LOCAL_CODE_REVIEWING` 标记调用 Checker；③Checker 按逐文件审查 + 规则注入 + 行级锚定 + 事实校验的 OCR 流水线产出报告，**直接写**至 `{wf}/reviews/local-code-review-{YYYYMMDD-HHMM}.md`；④不推进任何 `.stage`，不写 PASS/REJECT 标记，仅输出报告供用户参考。**规则注入的规则库**位于 `~/.config/opencode/skills/specpipe/docs/review-rules/`（`system_rules.json` 做文件后缀 → 规则文档映射，含 20 个语言规则 + `default.md` 兜底，来源：獬豸 v1.5.3 `conf/ocr/rules/rule_docs/`）
 
 ## 文件产出
