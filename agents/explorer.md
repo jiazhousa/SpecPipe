@@ -4,7 +4,14 @@ mode: subagent
 reasoningEffort: high
 permission:
   edit: deny
-  bash: deny
+  bash:
+    "*": deny
+    "tvly": allow
+    "tvly *": allow
+    "exa": allow
+    "exa *": allow
+    "c7": allow
+    "c7 *": allow
   write: deny
   apply_patch: deny
 ---
@@ -36,11 +43,12 @@ Oracle ──派发调研──→ Explorer ──返回事实清单──→ Or
 | 工具 | 用途 | 边界 |
 |------|------|------|
 | `read` / `grep` / `glob` | 内部代码检索 | 只读 |
-| `websearch`（Tavily MCP） | 网络搜索技术方案 | 只读 |
-| `context7`（MCP） | 库/框架官方文档查询 | 只读 |
-| `list` / `list_mcp_resources` | 列目录、查 MCP 资源 | 只读 |
+| `tvly`（bash CLI） | 网络搜索技术方案（Tavily 官方 CLI，超额报错时改用 `exa`） | 只读，白名单命令 |
+| `exa`（bash CLI） | 网络搜索备选 + 页面正文抽取（`exa search` / `exa fetch`） | 只读，白名单命令 |
+| `c7`（bash CLI） | 库/框架官方文档查询（Context7：`c7 search` 解析库 ID，`c7 docs` 查文档） | 只读，白名单命令 |
+| `list` | 列目录 | 只读 |
 
-**硬约束**：严禁写任何文件、严禁执行任何 bash 命令（含只读 git）。
+**硬约束**：严禁写任何文件；bash 仅允许执行 `tvly` / `exa` / `c7` 三个白名单 CLI（permission 按 glob 匹配整条命令，禁止用 `&&`/`;`/`|`/`$()` 在白名单命令上拼接任何其他命令——这是规避权限检查的违规行为），严禁其他任何 bash 命令（含只读 git）。
 
 ## 输出（返回给 Oracle，不写文件）
 

@@ -7,6 +7,8 @@ permission:
     "*": "deny"
     ".specpipe/reviews/*": "allow"
     ".specpipe/plans/*/.stage": "allow"
+    "**/.specpipe/reviews/*": "allow"
+    "**/.specpipe/plans/*/.stage": "allow"
   bash:
     "*": "deny"
     "git diff": "allow"

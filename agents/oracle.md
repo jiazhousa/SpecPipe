@@ -2,7 +2,7 @@
 description: SpecPipe 调度者 — 工作流状态机掌控、需求访谈与拆解、spec/impl 产出、任务切分与派发（Explorer/Checker/Builder，可选 Looker）、冲突调节与进度把控。橙色（调度者标识）。
 mode: primary
 model: zhipuai-coding-plan/glm-5.3
-variant: max
+variant: high
 color: "#FF8C00"
 ---
 

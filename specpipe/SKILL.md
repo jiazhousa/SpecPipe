@@ -66,7 +66,7 @@ S0 调研
 
 Oracle 调用 **Explorer**（subagent，`task` 工具）执行：
 - 任务 A：内部代码库调研（grep 搜索相关代码，理解现有实现）
-- 任务 B：外部技术调研（`websearch` MCP + `context7` MCP 搜索技术文档，见「检索工具」）
+- 任务 B：外部技术调研（`tvly`/`exa` 搜索 CLI + `c7` 文档 CLI 检索技术文档，见「检索工具」）
 
 Oracle 可在同一调研阶段**发起多个 Explorer 任务**（`task` 工具支持并行调用）。产出保留在对话上下文，不写文件。
 
@@ -75,7 +75,7 @@ Oracle 可在同一调研阶段**发起多个 Explorer 任务**（`task` 工具�
 task(
   subagent_type: "explorer",
   description: "S0 调研：{topic}",
-  prompt: "调研需求：{需求描述}。任务 A：检索代码库相关实现；任务 B：用 websearch 和 context7 查外部技术方案。输出结构化调研结果。"
+  prompt: "调研需求：{需求描述}。任务 A：检索代码库相关实现；任务 B：用 tvly/exa/c7 三个 CLI 查外部技术方案。输出结构化调研结果。"
 )
 ```
 
@@ -633,14 +633,15 @@ Oracle 通过 opencode 的 **`task` 工具**调用 Explorer/Checker/Builder（�
 
 ### 检索工具（Explorer 专用）
 
-Explorer subagent 使用 opencode 已配置的 MCP 进行外部调研：
+Explorer subagent 使用三个本地只读 CLI 进行外部调研（不再使用 MCP）：
 
-| MCP | 用途 | 说明 |
+| CLI | 用途 | 说明 |
 |-----|------|------|
-| `{{search_mcp}}` | Tavily 网络搜索 | MCP server，名 `websearch`，无需额外 CLI |
-| `{{docs_mcp}}` | 技术文档查询 | MCP server，名 `context7`，解析库 ID 后查文档 |
+| `{{search_cli}}` | 网络搜索 | Tavily 官方 CLI：`tvly search "<query>"`（支持 `--json`、`tvly extract <url>` 抽取页面正文）；认证走 `TAVILY_API_KEY` |
+| `{{search_backup_cli}}` | 备选搜索 + 页面正文抽取 | `exa search "<query>"`（`-n 10` 调数量，`--text` 附正文）/ `exa fetch <url>`；`tvly` 报 usage limit 超额时改用 |
+| `{{docs_cli}}` | 库/框架文档查询 | `c7 search "<关键词>"` 解析库 ID（如 `/vercel/next.js`）→ `c7 docs /vercel/next.js "app router" 800` 拉取文档片段（默认 3000 tokens） |
 
-> 环境依赖：两个 MCP 已配置在 `~/.config/opencode/opencode.json` 的 `mcp` 段。Explorer 直接调用对应工具即可，无需安装 CLI。
+> 环境依赖：三个 CLI 已安装（`tvly` 为 pip 全局安装的官方 CLI；`exa`/`c7` 为 `~/.local/bin/` 下的独立 curl 脚本，仅依赖 curl + python3）。`TAVILY_API_KEY` 需在 shell 环境导出。Explorer 的 bash 权限白名单仅放行这三个命令（glob 匹配整条命令，禁止拼接），见 `agents/explorer.md` frontmatter。
 
 ---
 
@@ -704,4 +705,4 @@ Explorer subagent 使用 opencode 已配置的 MCP 进行外部调研：
 
 ## 安装与文件清单
 
-> **安装**：本 skill 为全局安装，位于 `~/.config/opencode/skills/specpipe/`（SKILL.md + config.md + docs/）。配套 subagent 定义在 `~/.config/opencode/agents/`（explorer.md、checker.md、builder.md）。外部调研使用 opencode 已配置的 MCP：`websearch`（Tavily）+ `context7`。**角色模型、provider、工作流根目录等可配置项见 `config.md`**。环境要求：`TAVILY_API_KEY`（websearch MCP 使用，已在 `~/.config/opencode/opencode.json` 配置）；**tmux**（质量门长时检查的前置依赖，`apt install tmux` / `brew install tmux`）。
+> **安装**：本 skill 为全局安装，位于 `~/.config/opencode/skills/specpipe/`（SKILL.md + config.md + docs/）。配套 subagent 定义在 `~/.config/opencode/agents/`（explorer.md、checker.md、builder.md）。外部调研使用三个本地 CLI：`tvly`（Tavily 官方，pip 安装）+ `exa`（备选，`~/.local/bin/exa`）+ `c7`（Context7 文档，`~/.local/bin/c7`），**不再使用 MCP**。**角色模型、provider、工作流根目录等可配置项见 `config.md`**。环境要求：`TAVILY_API_KEY`（tvly CLI 使用，在 shell 环境导出）；**tmux**（质量门长时检查的前置依赖，`apt install tmux` / `brew install tmux`）。
