@@ -26,3 +26,5 @@
 ## 交接说明
 
 本仓 v2 起为**纯规章仓**：只维护流程与工件规范，不再提供可独立安装的 skill 形态（原 skill 目录、代理定义、索引与包定义均已移除）。原经本仓安装 skill 的使用方式已转向 **OpenCodePipe**——安装、配置与升级请前往该仓。
+
+> **过渡期安装**（OpenCodePipe 交付前）：v1 skill 最终态保存在 tag `v1-final`，恢复方式：`git checkout v1-final -- specpipe/ agents/`，随后将 `specpipe/` 复制到本地 skill 目录、`agents/*.md` 复制到本地代理目录即可。
