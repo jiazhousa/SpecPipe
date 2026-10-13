@@ -13,6 +13,7 @@
 4. **Scope Guard 开头**：每件显式声明只许动什么，越界意图列 deferred
 5. **对 agent 友好**：编号祈使句；只写模型不知道的；渐进披露三级（name/desc → 正文 → 引用文件）
 6. **状态语义进正文**：闭合判定、勾选权属写死在 skill 里，防漂移
+7. **意图粒度原则**（R1 拍板）：skill 按意图切分，不按操作主体切——不同意图不同 skill 合理，不同主体不同 skill 诡异（role 按主体切故废，skill 按意图切故立）
 
 ## 2. skill 清单总览（7 件）
 
@@ -51,11 +52,9 @@ spec-workflow ──(分级判定·HITL)──┬─▶ spec-write(Story/Epic) �
 ---
 name: spec-xxx
 description: <一句话，发现用：什么时候该用我>
-handoffs:            # 稳定名称，转译层负责宿主语法
-  - label: <按钮文案>
-    to: spec-yyy
-    prompt: <预填话术>
 ---
+
+（v1 frontmatter 仅 name/description——handoffs 暂缓，R3 决议；§5 各件 yaml 中的 handoffs 为未来设计留档）
 
 ## Scope Guard          ← 只许动什么；越界意图提取为 deferred 列表
 ## 前置检查             ← 工件存在性软门槛（有 CLI 走 specp check；无则人肉清单）
@@ -215,30 +214,30 @@ handoffs:
 
 > 共享文件是「二级披露」层：正文只引用路径，agent 用到才读——防 speckit 式膨胀。
 
-## 7. 正典源目录结构（B 仓落位建议）
+## 7. 正典源落位（R6 拍板：A 仓收拢，speckit 单仓模式）
+
+**一个仓 = 方法论 + skill + CLI**（2026-10-13 用户拍板，推翻最初「B 仓内重构」落点）：
 
 ```
-skills/                    ← 正典源（宿主无关 markdown）
-  spec-workflow/SKILL.md
-  spec-write/SKILL.md
-  spec-plan/SKILL.md
-  spec-task/SKILL.md
-  spec-sense/SKILL.md
-  spec-converge/SKILL.md
-  spec-coldstart/SKILL.md
-  shared/*.md
-configs/vendor/specpipe/   ← 规章语料（vendored，rules 速查的数据源，既有机制延续）
+SpecPipe A 仓（github.com/jiazhousa/SpecPipe）
+├── 01~11 卷 + templates/       ← 方法论（既有）
+├── skills/                     ← skill 正典源（宿主无关 markdown，本草案 §5 的 7 件 + shared/）
+├── cli/                        ← specp CLI 源码（冷启动/规则速查/工件检查三用途）
+└── drafts/                     ← 演进草案（已建，v3-drafts 分支）
 ```
 
-转译层（宿主挂载适配）**本期不做**（D20 adapter 暂缓）——正典先在 OpenCode 以直接挂载/引用方式试用。
+- **B 仓（opencodepipe）命运**：退役/冻结——存量资产（check-tools 图论校验模块、规则语料等）择优迁入 A 仓；stage 插件/agents 五件随 v3 废弃方向自然终结；退役节奏归「A/B 仓修订策略」轮
+- **vendored 机制消失**：同仓直引，无需 sha256 锁定副本（`specp rules` 直接读仓内规章）
+- 三层叙事收拢：Spec 哲学 → SpecPipe（方法论+skill+CLI 单仓）——OpenCodePipe 作为独立实现层完成历史使命
+- 转译层（宿主挂载适配）仍**本期不做**（D20 adapter 暂缓）；正典先直接挂载试用
 
-## 8. 待 review 决策点
+## 8. review 决议记录
 
-| # | 决策点 | 我的倾向 |
+| # | 决策点 | 决议（2026-10-13） |
 |---|---|---|
-| R1 | **skill 总数 7 件**——write 三变体合一（vs 拆 Story/Issue/Epic 三件）？sense 判定/采证合一（vs 拆两件）？ | 合一（变体是同工件的不同形态，拆开徒增发现成本；正文内分节） |
-| R2 | **`spec-workflow` 总纲的分量**——正文 10 行原则速览+一表，够吗？还是连总纲也砍掉（README/speckit 式，靠 description 发现+直接进 write）？ | 留总纲（分级判定 HITL 需要一个家；砍掉后分流逻辑散在各件里更糟） |
-| R3 | **handoffs 的 prompt 预填话术**要不要在 v1 就写全（vs 只写 label+to，话术转译期/使用期再填）？ | v1 只写 label+to+prompt 骨架，话术在使用中演化 |
-| R4 | **spec-sense 无 handoffs**（纯被动）——同意这个定位吗？ | 同意（sensor 是被调用方，返回即终结） |
-| R5 | **shared/ 四件清单**——有没有要增删的？ | 如表 |
-| R6 | **正典源放 B 仓 `skills/`**——同意吗？ | 同意（B 仓内重构已拍板 D-落点） |
+| R1 | skill 总数 7 件，变体合一 | ✅ 合一——**意图粒度原则**入设计原则 §1.7：按意图切不按主体切 |
+| R2 | 总纲 spec-workflow 留不留 | ✅ 保留——有推荐流程，不是纯粹发散 |
+| R3 | handoffs 预填话术 v1 只写骨架？ | ✅ **handoffs 整体暂缓**（2026-10-13）：OpenCode 无此机制 + 纯体验升级——v1 frontmatter 仅 name/description，互引以稳定名称写在 description/正文；handoffs 数据结构留档（§5 各件 yaml）待未来宿主支持时启用 |
+| R4 | spec-sense 无 handoffs 纯被动 | ✅ 确认——被传唤的鉴定人：叫来、鉴定、走人，返回即终结 |
+| R5 | shared/ 四件清单 | ✅ 无异议，迭代再看 |
+| R6 | 正典源落位 | ✅ **A 仓收拢**：一个仓=方法论+skill+CLI（speckit 单仓模式）；B 仓退役/冻结，节奏归 A/B 仓修订策略轮；vendored 机制消失 |

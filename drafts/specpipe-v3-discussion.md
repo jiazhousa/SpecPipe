@@ -11,7 +11,7 @@
 2. **管控对象换轨**：不控流程细节，**只控工件规约**（存在性/结构/质量/依赖），流程路径降级为 skill 建议
 3. **CLI 零权限控制**：纯工具（类似 git，谁都能调）
 4. **checker 跨家族吸纳为建议**：skill 层推荐「审查用异家族模型」+ doctor 检测提示，零强制
-5. **交付物落点**：B 仓（opencodepipe）内重构，main 迭代
+5. ~~**交付物落点**：B 仓（opencodepipe）内重构，main 迭代~~ → **推翻（D26）：A 仓收拢单仓模式**——SpecPipe 一个仓承载方法论+skill+CLI，B 仓退役/冻结
 6. **对标**：github/spec-kit（2026-10 形态）——skill-first；管控=工件型软门槛；agent 解耦=integration 适配器
 7. **雏形优先**：先跑通不做极致优化
 
@@ -51,6 +51,8 @@
 | D22 | **role 体系删除** | role=prompt+指定model+权限集合：「指定 model」宿主耦合（很多 harness 壳不好用）、权限已解耦（D20）、prompt 可抽进 skill——role 定义本质也是预制 prompt。五角色退役，知识迁入 skill |
 | D23 | **skill 按建议流程切分** | 双轴定义：建议流程（主轴）× 工件规约（内容）；章节与注入内容对 Agent 友好化（参照既有 spec skill 实践，调研行动项已挂）；skill 内引用 CLI 速查；**并行执行单元不绑定 subagent 机制**（chain 承载者形态宿主无关——独立会话/进程/多开皆可，方法论只管工件契约） |
 | D24 | **分级保留** | Epic / Story / Issue 三级保留，建议流程承载于 skill（Issue=锚定 spec 的快速路径，Epic=路线图容器） |
+| D25 | **意图粒度原则** | skill 按意图切分，不按操作主体切——不同意图不同 skill 合理，不同主体不同 skill 诡异（R1 拍板，原则入 skill 设计 §1.7） |
+| D26 | **A 仓收拢（单仓模式）** | 一个仓=方法论+skill+CLI（speckit 模式）：skills/ 与 cli/ 落 SpecPipe A 仓；**推翻最初「B 仓内重构」落点**——B 仓退役/冻结，存量资产择优迁移；vendored 机制消失（同仓直引）；三层叙事收拢为 Spec 哲学→SpecPipe |
 
 ## 四、核心设计展开
 
@@ -246,12 +248,13 @@
 
 1. ~~【行动项·调研】既有 spec skill 结构学习~~ ✅ 已完成（报告 `drafts/spec-skill-survey.md`，模式采纳清单见 4.11）
 2. ~~4.11 采纳清单四个 🟡 项~~ ✅ 已确认采纳（2026-10-13）
-3. **skill 定稿 v1 review** ← 当前：草案在 `drafts/specpipe-v3-skills.md`（7 件清单+统一骨架+各件设计+R1-R6 待决点），用户多轮 review 中
+3. ~~skill 定稿 v1 review（R1-R6）~~ ✅ 全部闭环（2026-10-13：合一+意图粒度原则 / 总纲保留 / handoffs 暂缓 / sense 被动确认 / shared 无异议 / **A 仓收拢单仓模式 D26**）
 
 ## 六、后续讨论路线图
 
-1. ~~工件集定义~~（D1-D24 已定）
-2. ~~spec-anchored 细化~~ / ~~状态机终局~~ / ~~CLI 命令面~~ / ~~role 命运与 skill 切分~~ / ~~spec skill 调研~~（已收）
-3. **skill 定稿 review** ← 当前：`drafts/specpipe-v3-skills.md` R1-R6 逐点确认
-4. **A/B 仓修订策略**：宪章 v6（含 v5 判例回摆）、06 卷重写、模板刷新、07 卷废除、**08 卷废除或重写（五角色退役）**、02-05 卷建议流程化、B 仓 agents/ 五件退役迁移
-5. （衔接 topic2）Pi 能力面详谈 → 反向约束 skill/CLI 边界与 sensor 通道设计
+1. ~~工件集定义~~（D1-D26 已定）
+2. ~~spec-anchored 细化~~ / ~~状态机终局~~ / ~~CLI 命令面~~ / ~~role 命运与 skill 切分~~ / ~~spec skill 调研~~ / ~~skill 定稿 review~~（已收）
+3. **下一步两候选**（待用户选）：
+   a. **A/B 仓修订策略**：宪章 v6（含 v5 判例回摆）、06 卷重写、模板刷新、07/08 卷废除、02-05 卷建议流程化、B 仓退役节奏与资产迁移清单（D26 收拢后的新格局）
+   b. **skill 正文开写**：按定稿草案撰写 7 件 SKILL.md 正文 + shared/ 四件（写作执行活，可边写边审）
+4. （衔接 topic2）Pi 能力面详谈 → 反向约束 skill/CLI 边界与 sensor 通道设计
