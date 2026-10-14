@@ -60,6 +60,7 @@
 
 ## 闭合语义
 
+- **多 sensor 是「且」关系**（AND）：一个工件挂载的全部 sensor 必须同时满足各自验收口径，缺一不可；不存在「或」式部分达标。
 - **task 闭合 = 全 sensor PASS**（计算型输出通过 + 推断型有结论且无未处置 critical/high）。
 - **spec 验收关键 = 全 task 闭合**：push 闭合检查（计算型 sensor）核验 spec 下挂载的全部 task 均已闭合。
 - **Story 闭合 = 收敛聚合通过**：全 task 闭合 + fence 全量 + 归档齐全（07-environment）。

@@ -42,7 +42,7 @@
 | 02-process | 建议流程：需求分级（Epic/Story/Issue）与各路径建议步骤 | 任何需求进入时 |
 | 03-artifacts | 工件规约：spec/impl/task 三层 schema、存放路由、依赖 DAG 与链、MR 锚定 | 产出/审阅任何工件时 |
 | 04-control | 控制点体系：guide/sensor 矩阵、挂载与用途、sidecar、重作回路、闭合语义 | 挂载 sensor / 执行判定时 |
-| 05-cli | CLI 契约：三用途、降级模式、宿主关系 | 使用/实现 CLI 时 |
+| 05-cli | CLI 契约：三用途、与 skill 的绑定关系、宿主关系 | 使用/实现 CLI 时 |
 | 06-charter | 工件宪章：S/R/H 条款、三级 sensor 判定清单、评分与判例 | 组装检查清单时 |
 | 07-environment | 环境与组合：Git 纪律、fence 编排、规则组合覆盖 | 进入编码阶段时 |
 | templates/ | 工件模板（spec/impl/task） | 产出工件对格式有疑问时 |
