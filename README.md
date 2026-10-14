@@ -10,7 +10,7 @@
 - **控制点**：guide（前馈）与 sensor（反馈）各分计算型（CLI 执行）与推断型（agent 判断）；guides 向下锚定，sensors 向上闭合
 - **spec-anchored**：一切行为变更锚定在 spec 上，无裸改；仅当 MR 合入时 spec 随代码一并更新
 - **流程是建议**：唯一强制性来自工件依赖——跳步不被拦截，但工件缺失使下一步自然受阻
-- **CLI 三用途**：棕地冷启动 / 规则手册速查 / 工件合规检查；无 CLI 时以降级模式运行
+- **CLI 三用途**：棕地冷启动 / 规则手册速查 / 工件合规检查；**CLI 与 skill 绑定**——既作为工具，也作为字典
 
 ## 术语表
 
@@ -30,7 +30,6 @@
 | fence | test fence | 全量回归测试围栏 |
 | 存放路由 | artifact residency | 工件存放位置规则（项目内 / 工作区） |
 | 软门槛 | soft gate | 不拦截但使下一步自然受阻的工件依赖 |
-| 降级模式 | degraded mode | 无 CLI 时的 skill-only 运行形态 |
 | spec-anchored | spec-anchored | 一切行为变更锚定于 spec，经 MR 原子同步 |
 | 棕地冷启动 | brownfield cold start | 存量项目首次接入本体系 |
 
