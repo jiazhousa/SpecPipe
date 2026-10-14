@@ -11,3 +11,9 @@
 ## Feature 记录
 
 - **specp-cli-and-skills**（2026-10-14 验收通过，AC1-AC4 全绿）：specp CLI 三用途（coldstart/rules/check 三层+跨级）+ skills 七件薄适配层 + review-rules 21 件迁入 + templates v3 三件。端到端验收：pi（GLM-5.3 主会话 + deepseek-flash sidecar）被指派开发 minimal-crm（~/project/minimal-crm），全程 6 HITL 卡点停等、重作回路真实迭代（spec 64→91 / impl 90→92）、check all 0F0W、fence 25/25、sensor3 终判 PASS 91——**spec-anchored 在异构 harness 首次全链路实证**。档案：specs/specp-cli-and-skills/（spec/impl/tasks T01-T09/dispatch-record/acceptance/pi-research）
+
+## 后续排队（2026-10-14）
+
+- B 仓（opencodepipe）退役——用户自行处理
+- 统筹工件随派发 commit 入库 / specp check 输出快照 CI 化 / task-commit 机械对应检查——低优先迭代
+- topic2 正式迁移（待议）：评估 Pi + SpecPipe 作为日常主力（OpenCode 是否仍必需）——pi 端到端已实证可行
