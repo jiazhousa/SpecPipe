@@ -20,4 +20,7 @@
 - sensor: 本 Story 自身工件 `specp check all` 全绿（dogfood 自检，验收标准 4）| type: 计算型（CLI）
 
 ## sensor 判定
-（执行后回填）
+
+- [计算型·验收 sensor1] CLI smoke 矩阵终验：help/rules/list/checkspec=0、四反夹具=1（点名）、badcmd/坏目录=2、node --check 全过、coldstart 幂等（3 skip）：**PASS**（2026-10-14）
+- [计算型·验收 sensor3 前置+AC4] minimal-crm 工件链独立复验：check all 0F0W + fence 25/25 + 功能冒烟一致：**PASS**；**两步协议复核**：本 Story 全判定落盘后 `specp check all specs/specp-cli-and-skills/` 退出码 0（0 FAIL / 0 WARN——含 T01-T09 全闭合）：**PASS**
+- [推断型·验收 sensor3] deepseek/deepseek-flash 跨家族终判：**PASS 91/100**（五链路逐项证据；1 medium 卡点 6 证据已补齐，2 low 转残留）——spec-anchored 目标达成

@@ -61,6 +61,7 @@
 | D32 | **多 sensor 挂载 + 且语义** | 一个工件可挂载多个 sensor；sensor 间是「且」（AND）关系——必须全部 sensor 验收口径同时满足才闭合，任一未通过即未闭合；不存在「或」式部分达标 |
 | D33 | **构建 Story 启动（dogfood）** | specp CLI + skills 薄适配层构建立项：v3 工件制首个真实实例（specs/specp-cli-and-skills/）；验收宿主=本地 pi-coding-agent，OpenCode 指派最小 CRM 开发；**边界收敛：最终 target=spec-anchored 达成**；验收三 sensor=CLI 可用（计算）/skill 合规可加载（计算）/流程与链路可检查（推断） |
 | D34 | **pi 模型路由（跨家族落位）** | GLM-5.3 承载统筹与执行（主会话），deepseek-flash 执行推断型 sensor（sidecar pi 会话）——跨家族 checker 吸纳在新架构的落位；pi provider/auth 由用户配置（HITL 前置） |
+| D35 | **端到端验收通过（spec-anchored 达成）** | 2026-10-14：pi 全链路开发 minimal-crm——6/6 HITL 卡点停等、重作回路真实迭代（spec sensor REJECT 64→91 两轮、impl 90→92 一轮）、check all 0F0W、fence 25/25、sensor3 跨家族终判 PASS 91；AC1-AC4 全绿；T01-T09 全闭合。**v3 工件制首次在异构 harness 真实运转并验收通过** |
 
 ## 四、核心设计展开
 
