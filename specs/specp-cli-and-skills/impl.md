@@ -63,5 +63,5 @@
 
 ## sensor 判定（sensor 侧写最终结论）
 
-- [推断型·impl 级统筹核查] **r1 REJECT 34/100**（2026-10-14，报告 `drafts/reviews/specp-cli-and-skills-impl-r1.md`：critical=coldstart 无承载 task；high=T08 自指循环；medium×3=涉改清单缺项/templates 旧制/R13 锚点缺失；low×7）→ **r2 修订**：T09 新增+T01 补 coldstart、T08 两步协议、清单补全、锚点补齐、判定节补齐 → 待 r2 复判
+- [推断型·impl 级统筹核查] **r1 REJECT 34/100 → r2 PASS 82/100**（2026-10-14，报告 `drafts/reviews/specp-cli-and-skills-impl-{r1,r2}.md`）。r1 12 项：完全闭环 5（critical/high/templates/夹具口径/锚定完整性）、部分闭环 4（残差 low）、未闭环 3（均 low）。**残差 5 项 low 处置**：随构建批次收口（T06 落实归一三点、T06/T09 各自更新 README 表述、D 号引用在收尾统一核对、T08 范围已同步 T09、spec 判定节断言已修正）
 

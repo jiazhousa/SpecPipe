@@ -18,4 +18,6 @@
 - sensor: `[NEEDS CLARIFICATION]` 标记与只追加语义在模板中有体现 | type: 推断型（sidecar 会话）
 
 ## sensor 判定
-（执行后回填）
+
+- [计算型] 三件模板存在、章节与 03-artifacts 结构表逐节一致、旧九件已删：**PASS**（2026-10-14 人工核对；CLI 检查待 T02 上线后由 `specp check` 复核——链内自举时序，T08 收口 check all 兜底）
+- [推断型] `[NEEDS CLARIFICATION]` 标记与决策表只追加语义在模板中有体现：**PASS**（spec-template 头注+决策节注释、impl/task 头注均含；语义充分性随 T08 sensor3 复核）

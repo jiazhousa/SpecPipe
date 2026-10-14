@@ -6,7 +6,7 @@
 - 分支/执行者: v3-drafts / 主会话统筹
 
 ## 范围
-- 涉改文件集：`specs/specp-cli-and-skills/acceptance.md`（验收报告）、tasks/T01-T08 判定补全、README/TODO/AGENTS.md 收尾更新
+- 涉改文件集：`specs/specp-cli-and-skills/acceptance.md`（验收报告）、tasks/T01-T09 判定补全、README/TODO/AGENTS.md 收尾更新
 - 统筹要点：impl「收尾清单」节
 
 ## guides（前馈）

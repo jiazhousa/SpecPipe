@@ -72,6 +72,6 @@ v3 方法论七卷已定稿并通过逐章 review。仓库当前只有规范文�
 
 - sensor: spec 三要素完备性与副作用分级正确性 | type: 推断型（sidecar 会话）| 验收口径：06-charter spec 判定清单（R1-R8、R18 适用项）
 
-## sensor 判定
+## sensor 判定（sensor 侧写最终结论）
 
-- [推断型·spec 级核查] r1 随 impl 级一并核查（见 impl.md 判定节）：spec 侧无 critical/high，两 low（决策链 D 号引用、判定节缺）已随 r2 修订补齐 → 待 r2 复判确认
+- [推断型·spec 级核查] r1 随 impl 级一并核查（两 low 已修）；**r2 PASS 82/100**（2026-10-14，报告 `drafts/reviews/specp-cli-and-skills-impl-r2.md`；r1 的 spec 侧问题全部闭环，无新增 spec 侧问题）
