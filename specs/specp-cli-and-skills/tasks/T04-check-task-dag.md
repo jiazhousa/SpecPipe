@@ -18,4 +18,7 @@
 - sensor: `node --check` + fixtures 冒烟脚本 | type: 计算型（CLI）
 
 ## sensor 判定
-（执行后回填）
+
+- [计算型] 正夹具（T01 单件 0 FAIL；all 对本 Story 0 FAIL/6 WARN=T04-T08 待判定属预期，DAG 无环+chain c1×9+锚定 47 件全命中）；反夹具（task-bad 缺锚点/缺类型、dag-bad 环+悬空引用）→ 退出码 1 点名：**PASS**（2026-10-14，统筹侧独立复跑；commit 4be304e）
+- [计算型] `node --check` + fixtures 冒烟：**PASS**
+- 口径裁决（统筹）：①push 闭合分层——含 FAIL 的未闭合报 FAIL、纯待判定报 WARN（与 task 层差集 WARN 同级）②spec 锚定完整性挂 all 跨级③**一 task 一 commit 的 git log 机械对应检查缓做**（commit message 含多 task 编号有误报面，转向环观察后定口径——记 T08 收尾复核项）

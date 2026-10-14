@@ -8,8 +8,7 @@ import { main as mainRules } from './commands/rules.mjs';
 import { fileURLToPath } from 'node:url';
 import { resolve } from 'node:path';
 
-// 命令表：T01 交付 coldstart/rules；T02 接入 check（spec/impl 层）；
-// check 的 task 层与跨级（all）扩展由 T04 在此表内继续追加。
+// 命令表：coldstart/rules（T01 交付）；check（T02 spec/impl 层 + T04 task 层与 all 跨级汇总）。
 const COMMANDS = [
   {
     name: 'coldstart',
@@ -23,7 +22,7 @@ const COMMANDS = [
   },
   {
     name: 'check',
-    summary: '工件合规检查：spec/impl 结构、行数预算、锚定与引用（task/all 层待 T04 扩展）',
+    summary: '工件合规检查：spec/impl/task 三层 + all 跨级汇总（DAG 无环/引用存在、闭合差集、push 闭合、spec 锚定）',
     main: mainCheck,
   },
 ];
@@ -37,7 +36,7 @@ const USAGE = [
   '三用途（05-cli 契约）：',
   '  ① 棕地项目冷启动 —— coldstart：脚手架铺设 + 项目事实盘点（JSON）',
   '  ② 规则手册速查 —— rules：条款级关键词检索与章节目录',
-  '  ③ 工件合规检查 —— check：spec/impl/task/跨级机械检查（spec/impl 已交付；task/all 由 T04 扩展）',
+  '  ③ 工件合规检查 —— check：spec/impl/task/跨级机械检查（三层与 all 汇总均已交付）',
   '',
   '命令：',
   ...COMMANDS.map((command) => `  ${command.name.padEnd(10)}${command.summary}`),
