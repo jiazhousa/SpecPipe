@@ -19,4 +19,6 @@
 - sensor: pi 会话产出工件链（spec/impl/tasks/commits）真实存在且渐进生成（卡点复查载体=pi 会话记录——卡点本身不落工件痕迹，01-principles）| type: 推断型（sidecar 会话）
 
 ## sensor 判定
-（执行后回填）
+
+- [计算型] sandbox 初始化：coldstart 产物 ✓、pi 项目级包注入 ✓、用户 auth 就绪（zai-coding-cn + deepseek，gateway 已清）✓、**skill 加载确认 ✓**（`pi -p` 列出全部七件 spec-* skills——验收 sensor2 闭环）：**PASS**（2026-10-14）
+- [推断型] pi 会话产出工件链真实存在且渐进生成（spec→impl→tasks→commits 逐 stage 呈报；6 个 HITL 卡点全部停等，复查载体=pi 会话记录）：**PASS**（2026-10-14；全程记录见 dispatch-record.md；会话已闭环）
