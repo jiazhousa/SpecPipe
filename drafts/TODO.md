@@ -8,12 +8,11 @@
 
 ## 🔨 执行中
 
-- [ ] **A 仓重构五批次**（每批一 commit 推远端）：
+- [ ] **A 仓重构**（P1-P4 已确认，每批一 commit 推远端）：
   - [x] 批次 1：结构落地——删旧 11 卷，立 7 卷骨架，README 导览更新（2026-10-14）
-  - [ ] 批次 2：核心三卷重写——01-principles / 03-artifacts / 04-control
-  - [ ] 批次 3：02-process（四卷收拢）+ 06-charter v6（含 v5→v6 回摆判例）
-  - [ ] 批次 4：05-cli + 07-environment + templates 重构 + review-rules 迁入
-  - [ ] 批次 5：README 单仓叙事 + 交叉引用校对 + B 仓退役标记（可选）
+  - [x] 批次 2+3+4(卷正文)：**7 卷正文全部填充**（591 行）——⏳ **待用户 review 完整文档集**（2026-10-14）
+  - [ ] review 后：批次 4(剩余)——templates 重构（spec/impl/task 模板）+ review-rules 迁入（21 件）
+  - [ ] 批次 5：README 单仓叙事收尾 + 交叉引用校对 + B 仓退役标记（可选）
 
 ## 📋 排队（A 仓重构完成后）
 
