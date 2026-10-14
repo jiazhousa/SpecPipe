@@ -61,6 +61,10 @@
 - GLM-5.3/deepseek-flash 在 pi 的 provider/model id 命名未证 → T05 采证确认，auth 由用户完成（`pi auth print` 验证）
 - check 的章节语义匹配（中文标题变体）误判 → 匹配规则白名单化 + 判例迭代
 
+## sensors（impl 级挂载）
+
+- sensor: 统筹质量核查（任务切分粒度/依赖正确性/spec 覆盖完整性/隐藏依赖） | type: 推断型（sidecar 会话）| 验收口径：06-charter impl 判定清单 + S(impl) + R9-R12
+
 ## sensor 判定（sensor 侧写最终结论）
 
 - [推断型·impl 级统筹核查] **r1 REJECT 34/100 → r2 PASS 82/100**（2026-10-14，报告 `drafts/reviews/specp-cli-and-skills-impl-{r1,r2}.md`）。r1 12 项：完全闭环 5（critical/high/templates/夹具口径/锚定完整性）、部分闭环 4（残差 low）、未闭环 3（均 low）。**残差 5 项 low 处置**：随构建批次收口（T06 落实归一三点、T06/T09 各自更新 README 表述、D 号引用在收尾统一核对、T08 范围已同步 T09、spec 判定节断言已修正）

@@ -2,13 +2,14 @@
 // specp —— SpecPipe A 仓 CLI 入口。手写命令路由（承 B 仓 ocp 先例，不引 CLI 框架）：
 // 命令表 + process.argv 解析 + --help，零 npm 依赖，Node ≥18，ESM。
 // 退出码约定全命令统一（05-cli 契约）：0=成功 / 1=检查失败 / 2=用法错误。
+import { main as mainCheck } from './commands/check.mjs';
 import { main as mainColdstart } from './commands/coldstart.mjs';
 import { main as mainRules } from './commands/rules.mjs';
 import { fileURLToPath } from 'node:url';
 import { resolve } from 'node:path';
 
-// 命令表：本 Story（T01）交付 coldstart/rules 两命令；
-// check（用途③工件合规检查）由后续 task（T02/T04）接入，届时在表中追加即可。
+// 命令表：T01 交付 coldstart/rules；T02 接入 check（spec/impl 层）；
+// check 的 task 层与跨级（all）扩展由 T04 在此表内继续追加。
 const COMMANDS = [
   {
     name: 'coldstart',
@@ -19,6 +20,11 @@ const COMMANDS = [
     name: 'rules',
     summary: '规则速查：--list 列章节目录；<关键词> 全文检索语料（01-07 卷 + README）',
     main: mainRules,
+  },
+  {
+    name: 'check',
+    summary: '工件合规检查：spec/impl 结构、行数预算、锚定与引用（task/all 层待 T04 扩展）',
+    main: mainCheck,
   },
 ];
 
@@ -31,7 +37,7 @@ const USAGE = [
   '三用途（05-cli 契约）：',
   '  ① 棕地项目冷启动 —— coldstart：脚手架铺设 + 项目事实盘点（JSON）',
   '  ② 规则手册速查 —— rules：条款级关键词检索与章节目录',
-  '  ③ 工件合规检查 —— check：spec/impl/task/跨级机械检查（建设中，后续交付）',
+  '  ③ 工件合规检查 —— check：spec/impl/task/跨级机械检查（spec/impl 已交付；task/all 由 T04 扩展）',
   '',
   '命令：',
   ...COMMANDS.map((command) => `  ${command.name.padEnd(10)}${command.summary}`),
