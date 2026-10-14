@@ -12,6 +12,7 @@
 ## guides（前馈）
 - guide: spec 验收标准 1-4 + 三 sensor 定义 | type: 计算型（机械引用）
 - guide: 验收内容——①`specp check all` 对 minimal-crm 工件链全绿 ②sensor3 推断型：deepseek-flash 审查「流程规范化/卡点可复查/工件规范与完整链路」（清单：分级确认痕迹、spec 三要素与副作用处理、task 闭合链、commit 对应、skill 实际被消费的证据）③人工验收呈报用户 | type: 推断型（统筹撰写）
+- guide: **收尾两步协议（解自指）**：①先全部 task 判定落盘（含本 task sensors 的执行与判定）②后跑 `specp check all` 复核——check 只核对「已落盘判定 vs 声明」差集，最后写入的判定自然使差集清零，判定写入与 check 通过不构成循环前提 | type: 推断型（统筹撰写）
 
 ## sensors（反馈）
 - sensor: **验收 sensor1**——CLI smoke 全量（--help/三用途/正反夹具/退出码矩阵）| type: 计算型（CLI）

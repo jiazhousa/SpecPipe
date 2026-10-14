@@ -61,13 +61,17 @@ v3 方法论七卷已定稿并通过逐章 review。仓库当前只有规范文�
 
 | 决策 | 结论 | 来源 |
 |---|---|---|
-| 验收宿主 = 本地 pi-coding-agent，OpenCode 指派开发 | 采纳 | 用户 2026-10-14 |
-| 边界收敛：最终 target = spec-anchored 达成 | 采纳 | 用户 2026-10-14 |
-| 三 sensor 定义（CLI 可用 / skill 合规可加载 / 流程与链路可检查） | 采纳为验收标准 1-3 | 用户 2026-10-14 |
-| 验收 topic = 构建最小 CRM 系统（sandbox 新仓，非本仓 templates 重构） | 采纳 | 用户 2026-10-14 |
-| 模型路由：GLM-5.3 承载统筹与执行（主会话），deepseek-flash 执行推断型 sensor（跨家族） | 采纳 | 用户 2026-10-14 |
-| pi 侧 provider 配置与 auth 由用户完成（HITL 前置依赖） | 依赖项 | 用户 2026-10-14 |
+| 验收宿主 = 本地 pi-coding-agent，OpenCode 指派开发 | 采纳 | 用户 2026-10-14；D33 |
+| 边界收敛：最终 target = spec-anchored 达成 | 采纳 | 用户 2026-10-14；D33 |
+| 三 sensor 定义（CLI 可用 / skill 合规可加载 / 流程与链路可检查） | 采纳为验收标准 1-3 | 用户 2026-10-14；D33 |
+| 验收 topic = 构建最小 CRM 系统（sandbox 新仓，非本仓 templates 重构） | 采纳 | 用户 2026-10-14；D33 |
+| 模型路由：GLM-5.3 承载统筹与执行（主会话），deepseek-flash 执行推断型 sensor（跨家族） | 采纳 | 用户 2026-10-14；D34 |
+| pi 侧 provider 配置与 auth 由用户完成（HITL 前置依赖） | 依赖项 | 用户 2026-10-14；D34 |
 
 ## sensors（spec 级挂载）
 
 - sensor: spec 三要素完备性与副作用分级正确性 | type: 推断型（sidecar 会话）| 验收口径：06-charter spec 判定清单（R1-R8、R18 适用项）
+
+## sensor 判定
+
+- [推断型·spec 级核查] r1 随 impl 级一并核查（见 impl.md 判定节）：spec 侧无 critical/high，两 low（决策链 D 号引用、判定节缺）已随 r2 修订补齐 → 待 r2 复判确认

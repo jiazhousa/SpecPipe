@@ -31,31 +31,37 @@
 
 | task | 职责 | depends_on |
 |---|---|---|
-| T01 | CLI 骨架 + rules 速查（语料=七卷+README） | —— |
+| T09 | templates v3 重构（spec/impl/task 三件；删旧九件；coldstart 骨架来源） | —— |
+| T01 | CLI 骨架 + coldstart + rules 速查（语料=七卷+README） | T09 |
 | T02 | check：spec + impl 层 | T01 |
-| T03 | review-rules 迁入 + rules 语料扩展 | T01 |
-| T04 | check：task 层 + DAG + 闭合差集 + push 闭合（git 集成） | T02 |
+| T03 | review-rules 迁入 + rules 语料扩展（链内可与 T02 换序，依赖只系 T01） | T01 |
+| T04 | check：task 层 + DAG + 闭合差集 + push 闭合 + spec 锚定完整性（git 集成） | T02 |
 | T05 | pi 扩展机制采证（extension 格式/skills 资源/provider 与模型配置/-p 与 rpc/sidecar 调用形态） | —— |
 | T06 | skills 薄适配层实现（按采证形态）+ pi 加载验证（sensor2） | T05 |
 | T07 | 最小 CRM sandbox 初始化 + pi 注入 + 用户 auth（HITL）+ 指派开发（GLM-5.3 主会话） | T03, T04, T06 |
 | T08 | 端到端验收：工件链 `specp check` 全绿 + sensor3 推断型判定（deepseek-flash）+ 人工验收 + 收敛归档 | T07 |
 
-链划分：T07 依赖 T03/T04/T06 → 全图连通 → **单链**（分支 `v3-drafts`，执行者=主会话统筹派发）；执行顺序 T01→T02→{T03,T04}→T05→T06→T07→T08（链内依赖满足即可）。
+链划分：T07 依赖 T03/T04/T06、T01 依赖 T09 → 全图连通 → **单链**（分支 `v3-drafts`，执行者=主会话统筹派发）；执行顺序 T09→T01→T02→T03→T04→T05→T06→T07→T08（链内依赖满足即可，T05 可与 T01-T04 段交错）。
 
 ## 涉改文件总清单
 
-- 新增：`cli/`（specp.mjs + 命令模块 + fixtures/）、`skills/`（七件 + 适配形态文件）、`review-rules/`（21 件迁入）、`specs/specp-cli-and-skills/{impl.md, tasks/T01-T08.md 及其判定}`
-- 修改：`README.md`（skills/cli 行转实现态）、`drafts/TODO.md`、`drafts/specpipe-v3-discussion.md`（D33/D34）
+- 新增：`cli/`（specp.mjs + 命令模块 + lib + fixtures/）、`skills/`（七件 + 适配形态文件）、`review-rules/`（21 件迁入）、`AGENTS.md`（本仓新建，收尾 feature 记录）、`specs/specp-cli-and-skills/`（impl.md、tasks/T01-T09.md 及其判定、pi-research.md、dispatch-record.md、acceptance.md）
+- 修改：`templates/`（删旧九件、建 v3 三件）、`README.md`（skills/cli/templates/review-rules 行转实现态）、`drafts/TODO.md`、`drafts/specpipe-v3-discussion.md`（D33/D34）
 - 不动：01-07 卷正文（发现规约问题走判例/issue，spec 副作用 S4）
 
 ## 收尾清单
 
-- fence：`node --check` 全模块 + CLI smoke 脚本（正反夹具全跑）+ `specp check all` 对本 Story 自身工件全绿
-- 归档：工件已在仓内（specs/ 即项目内快照）；AGENTS.md（本仓如无则建）追加 feature 记录
-- TODO 勾销；决策链 D33/D34 补记
+- fence：`node --check` 全模块 + CLI smoke 脚本（正反夹具全跑）+ **两步协议**收尾（先全判定落盘，后 `specp check all` 复核自身工件全绿——协议见 T08）
+- 归档：工件已在仓内（specs/ 即项目内快照）；AGENTS.md 追加 feature 记录
+- TODO 勾销；决策链补记
 
 ## 风险
 
 - pi 扩展机制与预期形态不符（如无 skills 资源）→ 兜底 `--append-system-prompt` 注入卷内容路径 + AGENTS.md 约定（薄适配层隔离，S2 兼容方案）
-- GLM-5.3/deepseek-flash 在 pi 的 provider/model id 命名未证 → T05 采证确认，auth 由用户完成
+- GLM-5.3/deepseek-flash 在 pi 的 provider/model id 命名未证 → T05 采证确认，auth 由用户完成（`pi auth print` 验证）
 - check 的章节语义匹配（中文标题变体）误判 → 匹配规则白名单化 + 判例迭代
+
+## sensor 判定（sensor 侧写最终结论）
+
+- [推断型·impl 级统筹核查] **r1 REJECT 34/100**（2026-10-14，报告 `drafts/reviews/specp-cli-and-skills-impl-r1.md`：critical=coldstart 无承载 task；high=T08 自指循环；medium×3=涉改清单缺项/templates 旧制/R13 锚点缺失；low×7）→ **r2 修订**：T09 新增+T01 补 coldstart、T08 两步协议、清单补全、锚点补齐、判定节补齐 → 待 r2 复判
+

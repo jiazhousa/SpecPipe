@@ -10,7 +10,7 @@
 - 统筹要点：impl「验收」节前置——为 T06/T07 提供事实
 
 ## guides（前馈）
-- guide: 采证问题清单（见 sensors）| type: 计算型（机械引用）
+- guide: spec G2/G3/AC3（为 skills 形态与验收路由提供事实）+ 采证问题清单（见 sensors）| type: 计算型（机械引用）
 - guide: 只读采证——pi --help 各子命令 / ~/.pi 结构 / pi 官方文档（npm pi-coding-agent）；结论逐条附来源，不确定标「未确认」| type: 推断型（统筹撰写）
 
 ## sensors（反馈）

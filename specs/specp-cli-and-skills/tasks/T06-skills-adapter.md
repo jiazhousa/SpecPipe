@@ -10,8 +10,8 @@
 - 统筹要点：impl「skills」节——薄适配：frontmatter（name/description）+ 意图执行指导 + 卷引用；正文永不复制卷内容（D27）
 
 ## guides（前馈）
-- guide: drafts/specpipe-v3-skills.md 定稿 v1 的七件职责与章节骨架（按归一修正消费）+ 02-process 各路径 | type: 计算型（机械引用）
-- guide: skill 正文写意图执行指导（祈使句/Scope Guard/CLI 协作点），规约细节一律「specp rules <主题>」或卷引用；sensor 调用指导写明 sidecar 渠道（shell 起 pi 会话，模型家族建议）| type: 推断型（统筹撰写）
+- guide: spec G2/AC2 + drafts/specpipe-v3-skills.md 定稿 v1 的七件职责与章节骨架（按归一修正消费）+ 02-process 各路径 | type: 计算型（机械引用）
+- guide: skill 正文写意图执行指导（祈使句/Scope Guard/CLI 协作点），规约细节一律「specp rules <主题>」或卷引用；sensor 调用指导写明 sidecar 渠道（shell 起 pi 会话，模型家族建议）。**归一修正点清单**：①卷为唯一正文源，skill 不复制卷内容 ②定稿草案的 shared/ 四件不再独立——sensor-protocol→04 卷已含、cli-reference→05 卷已含、artifact-spec→03 卷已含、hitl-checkpoints→02 卷已含，skill 内以卷引用替代 ③handoffs 不做（R3 决议），互引用稳定名称 | type: 推断型（统筹撰写）
 
 ## sensors（反馈）
 - sensor: **验收 sensor2**——skill 结构合规（frontmatter 必填/卷引用路径存在）+ pi 加载验证（`pi list` 或采证确认的等价机制显示挂载）| type: 计算型（CLI）

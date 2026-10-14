@@ -10,7 +10,7 @@
 - 统筹要点：impl「CLI」check 节——spec 章节（三要素语义匹配白名单）/行数预算/Issue 锚定；impl 章节/引用存在/切分清单
 
 ## guides（前馈）
-- guide: 03-artifacts「spec 工件」「impl 工件」结构表 + 06-charter §2/§3 结构项 | type: 计算型（机械引用）
+- guide: spec G1/AC1/AC4（check 属三用途③，本 Story 自检依赖）+ 03-artifacts「spec 工件」「impl 工件」结构表 + 06-charter §2/§3 结构项 | type: 计算型（机械引用）
 - guide: 章节匹配用标题白名单（含变体，如「目标 / 非目标」合并节），不做模糊语义判断 | type: 推断型（统筹撰写）
 
 ## sensors（反馈）
