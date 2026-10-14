@@ -18,4 +18,6 @@
 - sensor: 用法错误→退出码 2；未知查询→非崩溃输出 | type: 计算型（CLI）
 
 ## sensor 判定
-（执行后回填）
+
+- [计算型] `node --check` 全模块 + `--help`/`rules --list`/`rules sensor`（命中 94 处含 03/04 卷）+ coldstart 临时目录产出骨架与 facts JSON 且幂等：**PASS**（2026-10-14，统筹侧独立复跑核验；commit 56947d0）
+- [计算型] 用法错误（badcmd）→ 退出码 2；未知查询→「无命中」非崩溃：**PASS**（独立复跑 exit=2 实证）
