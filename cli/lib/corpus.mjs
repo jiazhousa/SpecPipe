@@ -1,7 +1,7 @@
 // 语料加载：rules 速查的唯一数据源（05-cli 用途②——CLI 携带方法论语料）。
-// 语料 = 本仓（A 仓）根目录 01-07 规章卷 + README 术语表，文件清单硬编码白名单——
-// 不做目录扫描，保证语料边界确定、可审计；后续扩展（review-rules）时在此清单追加。
-import { readFileSync } from 'node:fs';
+// 语料 = 本仓（A 仓）根目录 01-07 规章卷 + README 术语表 + review-rules/ 审查规则语料（T03 迁入），
+// 文件清单硬编码白名单 + review-rules 目录内 .md 动态列举（迁入件随目录走，无需改码）。
+import { readFileSync, readdirSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -33,7 +33,19 @@ export function repoRoot() {
  */
 export function loadCorpus() {
   const root = repoRoot();
-  return CORPUS_FILES.map((file) => {
+  // T03：review-rules/ 目录内 .md 动态并入语料（迁入件随目录走）；排序保证输出稳定
+  const rulesDir = join(root, 'review-rules');
+  let ruleFiles = [];
+  try {
+    ruleFiles = readdirSync(rulesDir)
+      .filter((f) => f.endsWith('.md'))
+      .sort()
+      .map((f) => join('review-rules', f));
+  } catch {
+    // 目录不存在时静默跳过（语料退回白名单八件）
+  }
+  const files = [...CORPUS_FILES, ...ruleFiles];
+  return files.map((file) => {
     const raw = readFileSync(join(root, file), 'utf8');
     const lines = raw.split('\n');
     let title = file; // 无 `# ` 标题时的兜底

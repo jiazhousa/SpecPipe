@@ -18,4 +18,6 @@
 - sensor: `specp rules <规则关键词>` 能命中迁入文档 | type: 计算型（CLI）
 
 ## sensor 判定
-（执行后回填）
+
+- [计算型] `ls review-rules | wc -l` = 21（20 md + system_rules.json）：**PASS**（2026-10-14）
+- [计算型] `specp rules` 命中迁入文档（"Dead Code" 命中 7 个语言规则文件、"@State" 命中 arkts.md；--list 含 20 条 review-rules 条目）：**PASS**（统筹侧复跑；语料动态并入，迁入件随目录走）
