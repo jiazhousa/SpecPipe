@@ -14,13 +14,17 @@
 
 ## 术语表
 
+> 术语对齐 Birgitta Böckeler《Harness Engineering for Coding Agent Users》（martinfowler.com，2026-04）。
+
 | 术语 | 业界对应 | 含义 |
 |---|---|---|
 | 工件 | artifact | 工作流的标准化产出物（spec / impl / task） |
-| guide | guide / feedforward context | 前馈控制点：执行前注入的定向材料 |
-| sensor | sensor / verifier | 反馈控制点：执行后的校验与判定 |
-| 计算型 | deterministic | 可机械执行，输出确定性事实 |
-| 推断型 | inferential | 需要语义判断 |
+| harness | harness | agent 中模型之外的一切；本体系是为编码 agent 构建的用户侧外层 harness（outer harness） |
+| guide | guide / feedforward control | 前馈控制：行动前注入的定向材料，提高首次正确概率 |
+| sensor | sensor / feedback control | 反馈控制：行动后观测并促成自修正 |
+| 计算型 | computational | 确定性、快速、可机械执行（CPU），结果可靠 |
+| 推断型 | inferential | 语义分析与判断（AI review、LLM as judge），较慢且非确定 |
+| 转向环 | steering loop | 人迭代 harness 的元过程：问题重复出现时改进 guides/sensors |
 | sidecar 会话 | sidecar | 伴生于执行者但外置的 sensor 载体 |
 | HITL 卡点 | human-in-the-loop gate | 必须由用户确认的环节 |
 | 链 | task chain | 依赖连通的 task 集合；1 链 = 1 分支 + 1 执行者 |

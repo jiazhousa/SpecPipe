@@ -1,13 +1,13 @@
 # 04-control —— 控制点体系
 
-> 本卷定义 guide/sensor 控制点体系：类型矩阵、挂载与用途、sidecar 模型、重作回路与闭合语义。guide/sensor 是 harness 的普适抽象——一切派发单元（编码 task、审查、调研、探针）都以它装配。
+> 本卷定义 guide/sensor 控制点体系：类型矩阵、挂载与用途、sidecar 模型、重作回路与闭合语义。guide/sensor 是 harness 的两类控制：**guides = 前馈控制（feedforward controls）**，在 agent 行动前引导，提高首次正确的概率；**sensors = 反馈控制（feedback controls）**，在 agent 行动后观测并促成自修正。一切派发单元（编码 task、审查、调研、探针）都以 guide/sensor 装配。术语对齐：Birgitta Böckeler《Harness Engineering for Coding Agent Users》（martinfowler.com，2026-04）。
 
 ## guide/sensor 2×2 矩阵
 
-| | 计算型（deterministic） | 推断型（inferential） |
+| | 计算型（computational） | 推断型（inferential） |
 |---|---|---|
-| **guide（前馈）** | 机械装配的定向材料：涉改文件集、基线 commit、spec 条目引用、验证命令 | 语义引导：架构意图、风险提示、实现口径、跨 task 协调说明 |
-| **sensor（反馈）** | 确定性校验：编译、指定测试、fence、文件集漂移检查、push 闭合检查 | 语义审查：代码审查、spec 符合性、设计对齐、**调研采证** |
+| **guide（前馈控制，feedforward control）** | 机械装配的定向材料：涉改文件集、基线 commit、spec 条目引用、验证命令 | 语义引导：架构意图、风险提示、实现口径、跨 task 协调说明 |
+| **sensor（反馈控制，feedback control）** | 确定性校验：编译、指定测试、fence、文件集漂移检查、push 闭合检查 | 语义审查：代码审查、spec 符合性、设计对齐、**调研采证** |
 
 **类型决定载体与渠道**：
 
@@ -15,6 +15,7 @@
 - 计算型 sensor → **CLI 执行**（渠道 = shell；计算发生在执行者推理之外，天然外置）
 - 推断型 guide → 统筹阶段撰写（语义引导）
 - 推断型 sensor → **sidecar 会话**（渠道 = 宿主的 agent 调用机制；建议跨模型家族承载）
+- sensor 的输出信号应**面向 LLM 消费优化**——附带自修正指引（如 linter 消息包含修复指示），帮助执行者直接进入自修正回路。
 
 ## 挂载与用途
 
@@ -80,6 +81,11 @@
 
 - **推断型 sensor 建议由与执行者不同家族的模型承载**——交叉验证，避免同源盲区。
 - 此为 skill 层建议，零强制：模型选型是用户决策，本仓不规定、不检测、不拦截。
+
+## 转向环（steering loop）
+
+- 人的元职责是**迭代 harness 本身**：同类问题重复出现时，优先改进对应的 guide（使问题更难发生）或 sensor（使问题更早暴露），而非逐次人工修补。
+- 宪章判例机制（06-charter 附录 A）是转向环的固化形态：判定分歧经裁决沉淀为条款，下次组装生效。
 
 ## 派发单元全景
 
