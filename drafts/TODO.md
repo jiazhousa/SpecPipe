@@ -1,39 +1,31 @@
 # SpecPipe v3 —— TODO
 
-> 工作分支：`v3-drafts` · 决策链：`drafts/specpipe-v3-discussion.md`（D1-D26）· 最后更新：2026-10-14
+> 工作分支：`v3-drafts` · 决策链：`drafts/specpipe-v3-discussion.md`（D1-D35）· 最后更新：2026-10-14
 
-## ⏸ 待用户确认
+## ✅ 已完成（v3 主线）
 
-- [x] ~~**P1-P4**~~ ✅ 全部确认（2026-10-14）
+- [x] 工件集与控制回路设计（D1-D32，含六次推翻修正）
+- [x] A 仓重构：七卷工件制（review 闭环：5 issue 批+语言规范化+术语对齐 Harness Engineering+降级删除+多 sensor 且语义）
+- [x] **Story specp-cli-and-skills 全链闭环**（T01-T09 全闭合，2026-10-14 验收通过）：
+  - specp CLI 三用途（coldstart / rules 语料=七卷+README+review-rules 21 件 / check 三层+跨级）
+  - skills 七件薄适配（Agent Skills standard，pi 实测加载）
+  - templates v3 三件 / review-rules 迁入 / AGENTS.md 建立
+  - **端到端验收：pi（GLM-5.3+deepseek-flash sidecar）开发 minimal-crm——6/6 HITL 卡点、重作回路真实迭代、check all 0F0W、fence 25/25、sensor3 终判 PASS 91——spec-anchored 达成（D35）**
 
-## 🔨 执行中
+## 📋 排队（后续迭代）
 
-- [ ] **7 卷正文逐章 review** ← 当前（用户进行中，耗时较长；意见将以 issue 形式反馈）
-  - review 期间的修订约定：每条 issue → 对应修订 commit 推远端，可追溯
-- [ ] **A 仓重构**（review 通过后继续）：
-  - [x] 批次 1：结构落地（2026-10-14）
-  - [x] 7 卷正文填充 + 独立版本化重述 + 语言规范化（2026-10-14，624 行）
-  - [ ] review 后：templates 重构（spec/impl/task 模板）+ review-rules 迁入（21 件）
-  - [ ] 收尾：README 校对 + B 仓退役标记（可选）+ drafts/ 去留决策（合并 main 时）
-
-## 📋 排队（A 仓重构完成后）
-
-- [ ] **skill 正文撰写**：7 件 SKILL.md（workflow/write/plan/task/sense/converge/coldstart）+ shared/ 四件——按 `drafts/specpipe-v3-skills.md` 定稿 v1
-- [ ] **cli/ 实现**（specp，后续 Story）：冷启动（脚手架+事实盘点）/ 规则速查（条款级查询）/ 工件检查（spec/impl/task 多层次计算型 sensor，含依赖 DAG 图论校验、push 闭合检查）
-- [ ] **B 仓退役收尾**：README 归档声明、远端处置（若 B 仓有远端）
+- [ ] sensor3 残留 low：统筹工件随派发 commit 入库（非收敛 commit）；specp check 输出快照/CI 化
+- [ ] 一 task 一 commit 的 git log 机械对应检查（T04 缓做项，转向环观察）
+- [ ] checker 效率沉淀：任务书内联材料模式固化（本轮实证零探索零 deny）
+- [ ] B 仓（opencodepipe）退役收尾：README 归档声明
+- [ ] drafts/ 去留决策（合并 main 时：设计取舍档案 vs 剔除）
+- [ ] 合并 main 前的 README/导览终校
 
 ## 🗂 留档待激活
 
-- [ ] handoffs 数据结构（R3 暂缓：OpenCode 无此机制+纯体验升级；skill 定稿 §5 各件 yaml 留档，待宿主支持时启用）
+- [ ] handoffs 数据结构（R3 暂缓，待宿主支持）
 
 ## 🚀 topic2（独立轨道，缓行）
 
-- [ ] OpenCode → Pi 迁移详谈（**缓**，2026-10-14 用户指示）：Pi 能力面（subagent 机制？sensor 通道怎么落地？）→ 反向约束 skill/CLI 边界设计
-- [ ] 调研素材：`~/project/AgenticTicketDesk/research/picore-migration/04-pi-facts-explorer1.md`（2026-10-10 复核版）
-
-## ✅ 已完成
-
-- [x] 工件集与控制回路设计（D1-D26，无悬置）
-- [x] skill 定稿 v1 review（R1-R6 闭环：合一+意图粒度 / 总纲保留 / handoffs 暂缓 / sense 被动 / shared 四件 / A 仓收拢）
-- [x] spec skill 调研（speckit 解剖+OpenSpec/Kiro 扫描+模式采纳清单）
-- [x] 草案与重构方案上远端（v3-drafts：870c178 → 06e370c → b84c776 → f00641a）
+- [ ] OpenCode → Pi 迁移详谈（缓，2026-10-14 用户指示）——**但 pi 端到端已在本 Story 实证跑通**（GLM-5.3 主会话 + sidecar 模式），迁移的技术可行性问题已大部分消解，剩余主要是日常开发习惯迁移
+- [ ] 调研素材：`specs/specp-cli-and-skills/pi-research.md`（含 catalog 更新注记）
