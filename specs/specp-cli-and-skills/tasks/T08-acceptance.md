@@ -17,7 +17,7 @@
 ## sensors（反馈）
 - sensor: **验收 sensor1**——CLI smoke 全量（--help/三用途/正反夹具/退出码矩阵）| type: 计算型（CLI）
 - sensor: **验收 sensor3**——流程与链路可检查性判定（deepseek-flash sidecar，上述清单）| type: 推断型（sidecar 会话）
-- sensor: 本 Story 自身工件 `specp check all` 全绿（dogfood 自检，验收标准 4）| type: 计算型（CLI）
+- sensor: 本 Story 自身工件 `specp check all` 全绿（自举自检，验收标准 4）| type: 计算型（CLI）
 
 ## sensor 判定
 

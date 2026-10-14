@@ -19,5 +19,5 @@
 
 ## sensor 判定
 
-- [计算型] 正夹具（本 Story spec.md/impl.md，含 impl.md 补 sensors 声明节后）→ 0 FAIL/0 WARN 退出码 0；反夹具（缺「需求本身」「副作用」/spec 引用不存在）→ 退出码 1 且清单点名具体缺失：**PASS**（2026-10-14，统筹侧独立复跑；commit 1edddc5；首个 dogfood 战果=抓出 impl.md 自身缺 sensors 声明节并修复）
+- [计算型] 正夹具（本 Story spec.md/impl.md，含 impl.md 补 sensors 声明节后）→ 0 FAIL/0 WARN 退出码 0；反夹具（缺「需求本身」「副作用」/spec 引用不存在）→ 退出码 1 且清单点名具体缺失：**PASS**（2026-10-14，统筹侧独立复跑；commit 1edddc5；首次自举命中：抓出 impl.md 自身缺 sensors 声明节并修复）
 - [计算型] `node --check` 全模块：**PASS**

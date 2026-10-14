@@ -51,5 +51,5 @@
 | 07-environment | 环境与组合：Git 纪律、fence 编排、规则组合覆盖 | 进入编码阶段时 |
 | templates/ | 工件模板（spec/impl/task） | 产出工件对格式有疑问时 |
 | review-rules/ | 审查规则语料（21 件语言级规则 + system_rules.json 映射） | 推断型 sensor 逐文件审查时 |
-| skills/ | skill 集七件（Agent Skills standard，薄适配——正文在卷） | agent 挂载时 |
+| skills/ | skill 集八件（specpipe 先导入口 + 七件意图 skill；Agent Skills standard，薄适配——正文在卷） | agent 挂载时 |
 | specs/ | Story 开发档案（工件制工件链实例） | 了解工作流实际形态时 |
