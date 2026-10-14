@@ -17,4 +17,5 @@
 - sensor: 报告覆盖六问：①扩展包目录形态（skills 资源是否存在）②本地包安装（pi install ./path）产物结构 ③provider/model 配置法（zhipuai GLM-5.3、deepseek-flash 的 id 与 auth）④-p 非交互与退出码 ⑤会话/上下文注入（--append-system-prompt / AGENTS.md）⑥sidecar 调用可行性（shell 起 pi 会话作 sensor 载体）| type: 推断型（sidecar 会话）
 
 ## sensor 判定
-（执行后回填）
+
+- [推断型·采证] 六问全覆盖且逐条附来源（docs 行号/dist 源码/本机实测）：**PASS**（2026-10-14，报告 `specs/specp-cli-and-skills/pi-research.md`）。关键产出：①pi 原生 Agent Skills standard（SKILL.md 直接可用，progressive disclosure）②模型 id 命名差异实证（deepseek-v4-flash 而非 deepseek-flash；**glm-5.3 不在 catalog，须 models.json 自定义**）③sidecar 判定会话模板成立（-p --no-session + @file + --tools 只读 + 纯净性 flags）④auth：DEEPSEEK_API_KEY / ZAI_API_KEY（auth.json 优先）
