@@ -6,7 +6,7 @@
 - 分支/执行者: v3-drafts / 主会话统筹派发
 
 ## 范围
-- 涉改文件集：`skills/`（七件：workflow/write/plan/task/sense/converge/coldstart——形态按 T05 采证定：扩展包目录或独立文件）、README skills/ 行转实现态
+- 涉改文件集：`skills/`（七件 SKILL.md：workflow/write/plan/task/sense/converge/coldstart——Agent Skills standard 形态）、`package.json`（pi 键→skills 目录）、README skills/ 行转实现态、`05-cli.md`（用途①盘点项对齐实现——「模块清单」移除，M2 三方对齐）
 - 统筹要点：impl「skills」节——薄适配：frontmatter（name/description）+ 意图执行指导 + 卷引用；正文永不复制卷内容（D27）
 
 ## guides（前馈）
@@ -18,4 +18,6 @@
 - sensor: 每件 skill 的意图指导与卷内容一致（无复制、无矛盾）| type: 推断型（sidecar 会话）
 
 ## sensor 判定
-（执行后回填）
+
+- [计算型·验收 sensor2 前半] 七件 SKILL.md 结构合规（frontmatter name/description 必填、name=目录名且小写连字符、description ≤1024）+ 引用路径全部有效：**PASS**（2026-10-14 脚本核验）；**pi 实际加载验证移至 T07 注入时执行**（T07 sensor 含此项）
+- [推断型] **r1 REJECT 79/100 → r2 PASS 98/100**（2026-10-14，sidecar 两轮；r1：3M（README 行/模块清单三方漂移/package.json 未入集）+3L；r2 六项全处置+sidecar 模型 id 更新为 deepseek-flash（catalog 更新连带）；残留 1 low=快照类文档旧口径，已按建议补 pi-research 注记收口）。sidecar 调度改进同期落地：任务书内联材料+精确锚点（checker 零探索零 deny）

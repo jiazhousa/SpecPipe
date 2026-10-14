@@ -1,0 +1,9 @@
+{
+  "name": "specpipe",
+  "version": "3.0.0",
+  "private": true,
+  "description": "SpecPipe：spec 驱动开发的工件制方法论（七卷规约 + skill 挂载层 + specp CLI）",
+  "pi": {
+    "skills": ["./skills"]
+  }
+}

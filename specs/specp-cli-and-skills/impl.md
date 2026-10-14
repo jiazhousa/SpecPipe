@@ -45,7 +45,7 @@
 
 ## 涉改文件总清单
 
-- 新增：`cli/`（specp.mjs + 命令模块 + lib + fixtures/）、`skills/`（七件 + 适配形态文件）、`review-rules/`（21 件迁入）、`AGENTS.md`（本仓新建，收尾 feature 记录）、`specs/specp-cli-and-skills/`（impl.md、tasks/T01-T09.md 及其判定、pi-research.md、dispatch-record.md、acceptance.md）
+- 新增：`cli/`（specp.mjs + 命令模块 + lib + fixtures/）、`skills/`（七件 SKILL.md）、`package.json`（pi 键）、`review-rules/`（21 件迁入）、`AGENTS.md`（本仓新建，收尾 feature 记录）、`specs/specp-cli-and-skills/`（impl.md、tasks/T01-T09.md 及其判定、pi-research.md、dispatch-record.md、acceptance.md）
 - 修改：`templates/`（删旧九件、建 v3 三件）、`README.md`（skills/cli/templates/review-rules 行转实现态）、`drafts/TODO.md`、`drafts/specpipe-v3-discussion.md`（D33/D34）
 - 不动：01-07 卷正文（发现规约问题走判例/issue，spec 副作用 S4）
 

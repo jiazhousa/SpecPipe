@@ -51,5 +51,5 @@
 | 07-environment | 环境与组合：Git 纪律、fence 编排、规则组合覆盖 | 进入编码阶段时 |
 | templates/ | 工件模板（spec/impl/task） | 产出工件对格式有疑问时 |
 | review-rules/ | 审查规则语料（21 件语言级规则 + system_rules.json 映射） | 推断型 sensor 逐文件审查时 |
-| skills/ | skill 集：方法论的宿主消费形态（规划中） | agent 挂载时 |
+| skills/ | skill 集七件（Agent Skills standard，薄适配——正文在卷） | agent 挂载时 |
 | drafts/ | 设计过程档案（讨论纪要 / skill 定稿 / 调研 / TODO） | 了解设计取舍时 |

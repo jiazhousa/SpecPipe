@@ -3,6 +3,7 @@
 - **采证对象**：本机 npm 包 `@earendil-works/pi-coding-agent` **v0.84.1**（`/home/starlex/.nvm/versions/node/v24.14.0/lib/node_modules/@earendil-works/pi-coding-agent/`）
 - **方法**：全部本机事实——包内 `docs/`（31 篇官方文档）+ `dist/` 源码 + `~/.pi/agent/` 配置实测；未跑任何模型调用，未改任何配置
 - **采证会话**：Explorer（只读），Oracle 代落盘 2026-10-14
+- **⚠️ 2026-10-14 晚间 catalog 更新注记**：pi 模型目录已更新——`deepseek/deepseek-flash` 成为现官方名（替代 deepseek-v4-flash）、`zai-coding-cn/glm-5.3` 已内置可用；本报告问3的「无 glm-5.3」结论已过时；gateway 自定义 provider 已按用户指示删除，auth.json = zai-coding-cn + deepseek，默认模型 glm-5.3
 
 ---
 
