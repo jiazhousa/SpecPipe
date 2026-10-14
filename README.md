@@ -1,32 +1,27 @@
 # README —— 规章仓定位与卷导览
 
+> **v3 重构进行中（`v3-drafts` 分支）**：本分支正从「工作流制」重构为「工件制」（spec/impl/task 三层 + guide/sensor 控制点，决策链见 `drafts/specpipe-v3-discussion.md`）。下方卷结构为重构目标骨架，正文按批次落地；`main` 分支仍是完整的 v2 规章。
+
 **Spec 哲学**：先规格后编码——规格是人（意图）与机器（执行）之间的接口协议；注意力稀缺，人的裁定只投放在放行点。本仓工作流建立在该哲学之上（学习了 Spec Kit 等先例），哲学叙事不入仓。
-
-**体系三层**：
-
-- **Spec 哲学**（思想根基）—— 为什么这样做
-- **SpecPipe**（本仓：方法论）—— 建立在 Spec 哲学之上、服务于项目落地的工作流定义与工件定义，Harness / Agent 无关
-- **OpenCodePipe**（实现仓）—— SpecPipe 完整工程化实践在 OpenCode 上的体现与最后一公里（安装与使用见该仓）
 
 本仓为**规范体**：定义编码工作流的流程、工件与协作规范，不诠释哲学、不承载可执行实现、不含平台适配内容；消费者是 agent 与工具，不是人。
 
-## 卷导览
+## 卷导览（v3 工件制 · 七卷）
 
 | 卷 | 一句话职责 | 加载场景 |
 |---|---|---|
 | README | 本文件：定位与导览 | 首次接触本仓 |
-| 01-general | 总则硬条文、工作流触发、需求分级、配置项清单 | 常读；分级判定（S2）前必读 |
-| 02-workflow | 三路径总览、S0~S2 公共环节、用户放行机制 | 任何需求进入工作流时（分级读 01+02） |
-| 03-story-path | Story 路径：spec/impl 两阶段设计、编码与质量门 | 跑 Story 时（读 02+03） |
-| 04-epic-path | Epic 路径：Epic Spec、Story 路线图与进度推进 | 跑 Epic 时（读 02+04，Story 推进加 03） |
-| 05-issue-path | Issue 路径：无 Spec 直达 Impl、升级机制 | 跑 Issue 时（读 02+05） |
-| 06-artifacts | 工件规范：产出表、各工件定义、topic 取值规则 | 产出 / 审阅任何工件时 |
-| 07-state-machine | 状态机：三路径状态链、转移表、中断恢复 | 状态流转、会话中断恢复时 |
-| 08-roles | 角色职责矩阵、任务书标准、调度协议、检索工具职责 | 派发任何下级代理时 |
-| 09-check-split | 检查分流、五类审查清单、评分规则、审查深度分级 | 任何审查环节 |
-| 10-composition | 编码环境规范、Git 分支策略、fence 编排、规则叠加 | 进入编码阶段时 |
-| templates/ | 九类工件模板（epic-spec / spec / impl / issue-impl / 五类审查报告） | 产出工件对格式有疑问时 |
+| 01-principles | 原则总纲：spec-anchored、工件制立场、意图粒度、计算-推断分离 | 常读 |
+| 02-process | 建议流程：需求分级（Epic/Story/Issue）与各路径建议步骤 | 任何需求进入时 |
+| 03-artifacts | 工件规约：spec/impl/task 三层 schema、双址路由、依赖 DAG 与链路、MR 锚定 | 产出/审阅任何工件时 |
+| 04-control | 控制点体系：guide/sensor 矩阵、三级挂载、sidecar、重作回路、闭合语义 | 挂载 sensor / 执行判定时 |
+| 05-cli | CLI 契约：三用途（冷启动/规则速查/工件检查）、降级原则 | 使用/实现 CLI 时 |
+| 06-charter | 工件宪章 v6：S/R/H 条款、三级 sensor 判定清单、评分与判例 | 组装检查清单时 |
+| 07-environment | 环境与组合：Git 纪律、fence 编排、规则组合覆盖 | 进入编码阶段时 |
+| templates/ | 工件模板（v3 重构待落地） | 产出工件对格式有疑问时 |
+| drafts/ | v3 演进草案（讨论纪要/ skill 定稿/调研/TODO） | 了解 v3 决策链时 |
+| review-rules/ | 审查规则语料（B 仓迁入待落地，21 件语言规则） | 推断型 sensor 逐文件审查时 |
 
 ## 交接说明
 
-本仓 v2 起为**纯规章仓**：只维护流程与工件规范，不再提供可独立安装的 skill 形态（原 skill 目录、代理定义、索引与包定义均已移除）。安装、配置与升级请前往 **OpenCodePipe**（过渡期环境引导见该仓 `docs/BOOTSTRAP.md`）。
+v3 起为**单仓模式**（D26）：方法论 + skill + CLI 收拢本仓（`skills/`、`cli/` 按批次/后续 Story 落地）；原实现仓 OpenCodePipe 退役。v2 时期的安装交接说明见 `main` 分支。
