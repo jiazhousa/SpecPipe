@@ -1,32 +1,55 @@
-# README —— 规章仓定位与卷导览
+# README —— SpecPipe：spec 驱动开发的工件制方法论
 
-**Spec 哲学**：先规格后编码——规格是人（意图）与机器（执行）之间的接口协议；注意力稀缺，人的裁定只投放在放行点。本仓工作流建立在该哲学之上（学习了 Spec Kit 等先例），哲学叙事不入仓。
+**Spec 哲学**：先规格后编码——规格是人（意图）与机器（执行）之间的接口协议；注意力稀缺，人的裁定只投放在放行点。本体系建立在该哲学之上（学习了 Spec Kit 等先例），哲学叙事不入仓。
 
-**体系三层**：
+**单仓模式**：方法论（七卷）+ 工件模板 + 审查规则语料 + skill 集 + CLI 同仓承载。本仓是规范体：消费者是 agent 与工具，不是人——不诠释哲学、不含平台适配内容；宿主挂载（`skills/`）与工具实现（`cli/`）按路线落地。
 
-- **Spec 哲学**（思想根基）—— 为什么这样做
-- **SpecPipe**（本仓：方法论）—— 建立在 Spec 哲学之上、服务于项目落地的工作流定义与工件定义，Harness / Agent 无关
-- **OpenCodePipe**（实现仓）—— SpecPipe 完整工程化实践在 OpenCode 上的体现与最后一公里（安装与使用见该仓）
+## 核心概念速览
 
-本仓为**规范体**：定义编码工作流的流程、工件与协作规范，不诠释哲学、不承载可执行实现、不含平台适配内容；消费者是 agent 与工具，不是人。
+- **工件三层（artifact）**：spec（业务规则）→ impl（统筹任务书）→ task（最小执行与验证单元）；一个 Story = 1 spec : 1 impl : N task
+- **控制点**：guide（前馈）与 sensor（反馈）各分计算型（CLI 执行）与推断型（agent 判断）；guides 向下锚定，sensors 向上闭合
+- **spec-anchored**：一切行为变更锚定在 spec 上，无裸改；仅当 MR 合入时 spec 随代码一并更新
+- **流程是建议**：唯一强制性来自工件依赖——跳步不被拦截，但工件缺失使下一步自然受阻
+- **CLI 三用途**：棕地冷启动 / 规则手册速查 / 工件合规检查；**CLI 与 skill 绑定**——既作为工具，也作为字典
 
-## 卷导览
+## 术语表
+
+> 术语对齐 Birgitta Böckeler《Harness Engineering for Coding Agent Users》（martinfowler.com，2026-04）。
+
+| 术语 | 业界对应 | 含义 |
+|---|---|---|
+| 工件 | artifact | 工作流的标准化产出物（spec / impl / task） |
+| harness | harness | agent 中模型之外的一切；本体系是为编码 agent 构建的用户侧外层 harness（outer harness） |
+| guide | guide / feedforward control | 前馈控制：行动前注入的定向材料，提高首次正确概率 |
+| sensor | sensor / feedback control | 反馈控制：行动后观测并促成自修正 |
+| 计算型 | computational | 确定性、快速、可机械执行（CPU），结果可靠 |
+| 推断型 | inferential | 语义分析与判断（AI review、LLM as judge），较慢且非确定 |
+| 转向环 | steering loop | 人迭代 harness 的元过程：问题重复出现时改进 guides/sensors |
+| sidecar 会话 | sidecar | 伴生于执行者但外置的 sensor 载体 |
+| HITL 卡点 | human-in-the-loop gate | 必须由用户确认的环节 |
+| 链 | task chain | 依赖连通的 task 集合；1 链 = 1 分支 + 1 执行者 |
+| 执行者 | executor | 链的承载会话（形态宿主无关） |
+| 统筹 | orchestration / planning | impl 层的职责：分治方案设计 |
+| 收敛 | convergence | 收尾聚合阶段（全 task 闭合 + fence + 归档） |
+| fence | test fence | 全量回归测试围栏 |
+| 存放路由 | artifact residency | 工件存放位置规则（项目内 / 工作区） |
+| 软门槛 | soft gate | 不拦截但使下一步自然受阻的工件依赖 |
+| spec-anchored | spec-anchored | 一切行为变更锚定于 spec，经 MR 原子同步 |
+| 棕地冷启动 | brownfield cold start | 存量项目首次接入本体系 |
+
+## 卷导览（七卷）
 
 | 卷 | 一句话职责 | 加载场景 |
 |---|---|---|
 | README | 本文件：定位与导览 | 首次接触本仓 |
-| 01-general | 总则硬条文、工作流触发、需求分级、配置项清单 | 常读；分级判定（S2）前必读 |
-| 02-workflow | 三路径总览、S0~S2 公共环节、用户放行机制 | 任何需求进入工作流时（分级读 01+02） |
-| 03-story-path | Story 路径：spec/impl 两阶段设计、编码与质量门 | 跑 Story 时（读 02+03） |
-| 04-epic-path | Epic 路径：Epic Spec、Story 路线图与进度推进 | 跑 Epic 时（读 02+04，Story 推进加 03） |
-| 05-issue-path | Issue 路径：无 Spec 直达 Impl、升级机制 | 跑 Issue 时（读 02+05） |
-| 06-artifacts | 工件规范：产出表、各工件定义、topic 取值规则 | 产出 / 审阅任何工件时 |
-| 07-state-machine | 状态机：三路径状态链、转移表、中断恢复 | 状态流转、会话中断恢复时 |
-| 08-roles | 角色职责矩阵、任务书标准、调度协议、检索工具职责 | 派发任何下级代理时 |
-| 09-check-split | 检查分流、五类审查清单、评分规则、审查深度分级 | 任何审查环节 |
-| 10-composition | 编码环境规范、Git 分支策略、fence 编排、规则叠加 | 进入编码阶段时 |
-| templates/ | 九类工件模板（epic-spec / spec / impl / issue-impl / 五类审查报告） | 产出工件对格式有疑问时 |
-
-## 交接说明
-
-本仓 v2 起为**纯规章仓**：只维护流程与工件规范，不再提供可独立安装的 skill 形态（原 skill 目录、代理定义、索引与包定义均已移除）。安装、配置与升级请前往 **OpenCodePipe**（过渡期环境引导见该仓 `docs/BOOTSTRAP.md`）。
+| 01-principles | 原则总纲：spec-anchored、工件制边界、意图粒度、计算-推断分离 | 常读 |
+| 02-process | 建议流程：需求分级（Epic/Story/Issue）与各路径建议步骤 | 任何需求进入时 |
+| 03-artifacts | 工件规约：spec/impl/task 三层 schema、存放路由、依赖 DAG 与链、MR 锚定 | 产出/审阅任何工件时 |
+| 04-control | 控制点体系：guide/sensor 矩阵、挂载与用途、sidecar、重作回路、闭合语义 | 挂载 sensor / 执行判定时 |
+| 05-cli | CLI 契约：三用途、与 skill 的绑定关系、宿主关系 | 使用/实现 CLI 时 |
+| 06-charter | 工件宪章：S/R/H 条款、三级 sensor 判定清单、评分与判例 | 组装检查清单时 |
+| 07-environment | 环境与组合：Git 纪律、fence 编排、规则组合覆盖 | 进入编码阶段时 |
+| templates/ | 工件模板（spec/impl/task） | 产出工件对格式有疑问时 |
+| review-rules/ | 审查规则语料（21 件语言级规则 + system_rules.json 映射） | 推断型 sensor 逐文件审查时 |
+| skills/ | skill 集七件（Agent Skills standard，薄适配——正文在卷） | agent 挂载时 |
+| specs/ | Story 开发档案（工件制工件链实例） | 了解工作流实际形态时 |
