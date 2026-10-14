@@ -73,6 +73,18 @@ function specAnchoring(dirPath, tasks, problems, infos) {
     return;
   }
 
+  // 快照场景守卫：base..HEAD 区间内触碰本目录的 commit 数——仅 1 个（squash 合入主线/整仓快照）时，
+  // diff 会混入 Story 之前的非 task 变更（如方法论卷撰写），锚定检查失去归因前提，降级 INFO 跳过。
+  // 开发分支正常场景=多个 task commit 递进，检查照常执行；快照的合规证据以开发分支闭合判定为准。
+  const rangeLog = git(['log', '--format=%H', `${base}..HEAD`, '--', '.'], dirPath);
+  const touchCount = rangeLog ? rangeLog.split('\n').filter(Boolean).length : 0;
+  if (touchCount === 1) {
+    infos.push(
+      `${label}：区间内仅 1 个 commit 触碰本目录（基线 ${base.slice(0, 7)}..HEAD）——快照/squash 合入场景，锚定义务不可按 task 归因，跳过（合规证据见开发分支闭合判定）`,
+    );
+    return;
+  }
+
   // 涉改文件：diff 全集 → 排除 specs/、drafts/ 工件自身（路径为仓根相对）
   const diffOut = git(['diff', '--name-only', base, 'HEAD'], root);
   const changed = diffOut ? diffOut.split('\n').filter(Boolean) : [];

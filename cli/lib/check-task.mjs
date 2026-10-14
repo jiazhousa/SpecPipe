@@ -70,7 +70,8 @@ function parseChain(metaBody) {
   return line.text.replace(/^.*?chain[：:]/, '').trim().split(/[（(\s]/)[0];
 }
 
-/** 涉改文件集路径片段：范围节内含「涉改文件集」的行中反引号 span，过滤非路径形态（去重保序） */
+/** 涉改文件集路径片段：范围节内含「涉改文件集」的行——反引号 span 优先，另提取裸 PATH_LIKE token
+ *  （裸 token 如 `README/TODO/AGENTS.md`——作者不加反引号时同样入池；去重保序） */
 function parseFragments(scopeBody) {
   const fragments = [];
   for (const { text } of scopeBody ?? []) {
@@ -78,6 +79,12 @@ function parseFragments(scopeBody) {
     for (const m of text.matchAll(/`([^`]+)`/g)) {
       const frag = m[1].trim();
       if (PATH_LIKE.test(frag)) fragments.push(frag);
+    }
+    // 裸 token：剔除反引号 span 后，按空白/顿号切分取 PATH_LIKE 形态（含 / 或 . 的才有路径语义）
+    const bare = text.replace(/`[^`]+`/g, ' ');
+    for (const token of bare.split(/[\s、，,；;（）()]+/)) {
+      const t = token.trim();
+      if (t.length >= 3 && PATH_LIKE.test(t) && /[/.]/.test(t)) fragments.push(t);
     }
   }
   return [...new Set(fragments)];
