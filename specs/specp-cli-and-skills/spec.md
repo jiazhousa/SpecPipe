@@ -54,7 +54,7 @@ v3 方法论七卷已定稿并通过逐章 review。仓库当前只有规范文�
 
 1. `specp --help` 与三用途子命令 smoke 全部通过；对正/反两类夹具工件，check 判定与预期一致（合规→退出码 0，违规→1 并输出问题清单）；用法错误→2
 2. skills 挂载层结构合规（frontmatter 必填、卷引用路径有效）；pi 加载验证通过（`pi list` 或等价机制显示已挂载）
-3. pi 注入后被指派完成一个真实功能开发：产出 spec→impl→tasks→commits 完整工件链；`specp check` 对该工件链全绿；HITL 卡点（分级确认/spec 逐项确认/破坏性副作用放行——如有）可从工件与会话复查；人工验收 PASS
+3. **端到端验收（最小 CRM 系统）**：新建 sandbox git 仓作为目标项目，注入 skill + CLI；由 OpenCode 指派 pi（GLM-5.3 主会话承载统筹与执行）完成「最小 CRM」功能开发——产出 spec→impl→tasks→commits 完整工件链；推断型 sensor 由 deepseek-flash 的 pi 会话执行（跨模型家族）；`specp check` 对该工件链全绿；HITL 卡点可复查；人工验收 PASS
 4. 本 Story 自身工件（本 spec / impl / tasks）通过 `specp check` 自检全绿
 
 ## 决策记录
@@ -64,6 +64,9 @@ v3 方法论七卷已定稿并通过逐章 review。仓库当前只有规范文�
 | 验收宿主 = 本地 pi-coding-agent，OpenCode 指派开发 | 采纳 | 用户 2026-10-14 |
 | 边界收敛：最终 target = spec-anchored 达成 | 采纳 | 用户 2026-10-14 |
 | 三 sensor 定义（CLI 可用 / skill 合规可加载 / 流程与链路可检查） | 采纳为验收标准 1-3 | 用户 2026-10-14 |
+| 验收 topic = 构建最小 CRM 系统（sandbox 新仓，非本仓 templates 重构） | 采纳 | 用户 2026-10-14 |
+| 模型路由：GLM-5.3 承载统筹与执行（主会话），deepseek-flash 执行推断型 sensor（跨家族） | 采纳 | 用户 2026-10-14 |
+| pi 侧 provider 配置与 auth 由用户完成（HITL 前置依赖） | 依赖项 | 用户 2026-10-14 |
 
 ## sensors（spec 级挂载）
 
