@@ -5,7 +5,7 @@
 
 ## 注入方式（T05 采证落地）
 
-- skills：`pi install /home/starlex/project/specpipe -l`（项目级包，`.pi/settings.json` → 本地路径原地加载，package.json pi 键 → skills/）
+- skills：`pi install <SpecPipe 仓路径> -l`（项目级包，`.pi/settings.json` → 本地路径原地加载，package.json pi 键 → skills/）
 - CLI：`~/.local/bin/specp` wrapper → `node ~/project/specpipe/cli/specp.mjs`
 - 项目上下文：minimal-crm/AGENTS.md（工作流约定 + 技术栈）
 - 会话：`--session-id minimal-crm` 跨轮续会话；每轮 `pi -p` 单发，卡点处 pi 主动停等

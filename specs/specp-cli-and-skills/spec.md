@@ -28,7 +28,7 @@ v3 方法论七卷已定稿并通过逐章 review。仓库当前只有规范文�
 1. CLI 遵守 05-cli 契约：三用途别无其他；输出确定性事实；零权限控制；不感知 agent
 2. skills 遵守归一原则（D27）：01-07 卷是唯一正文源，挂载层是薄适配（frontmatter / 目录约定 / 卷引用），不复制卷内容
 3. sensor 遵守泛化 schema（D29/D32）：计算型/推断型两类、验收口径可验收、多 sensor 且关系
-4. 本 Story 自身工件（specs/specp-cli-and-skills/ 下 spec/impl/tasks）即 v3 工件制的第一个真实实例——dogfood：结构合规由 `specp check` 自检
+4. 本 Story 自身工件（specs/specp-cli-and-skills/ 下 spec/impl/tasks）即 v3 工件制的第一个真实实例——自举：结构合规由 `specp check` 自检
 5. 验收三 sensor（用户定义，2026-10-14）：
    - **sensor1（计算型）**：CLI 工具能正常使用——`--help`、三用途命令 smoke、正反夹具判定、退出码
    - **sensor2（计算型）**：skill 符合 skill 规范、能被正常加载——结构合规检查 + pi 加载验证
@@ -36,7 +36,7 @@ v3 方法论七卷已定稿并通过逐章 review。仓库当前只有规范文�
 
 ## 主要影响
 
-- 仓库从纯规范体变为**规范 + 实现**体：新增 `cli/`（specp 实现）、`skills/`（挂载层）、`specs/`（本 Story dogfood 工件）
+- 仓库从纯规范体变为**规范 + 实现**体：新增 `cli/`（specp 实现）、`skills/`（挂载层）、`specs/`（本 Story 自举工件）
 - README 与卷导览需同步实现态（skills/ 行从「规划中」变为实际）
 - 后续 SpecPipe 仓自身开发将以 v3 工件制运行（本 Story 是第一个）
 

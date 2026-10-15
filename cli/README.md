@@ -9,7 +9,7 @@ node cli/specp.mjs --help            # 查看三用途与命令面
 node cli/specp.mjs rules --list      # 列出语料各卷章节目录
 node cli/specp.mjs rules sensor      # 全文关键词检索条款
 node cli/specp.mjs coldstart --dir /path/to/project
-node cli/specp.mjs check all specs/specp-cli-and-skills/    # 工件合规自检（dogfood）
+node cli/specp.mjs check all specs/specp-cli-and-skills/    # 工件合规自检（自举验证）
 ```
 
 ## 命令
