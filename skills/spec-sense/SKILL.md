@@ -13,7 +13,7 @@ description: 推断型 sensor 的执行纪律——判定（审查，输出 PASS
 
 ## 判定用途（审查）
 
-1. 接收调用上下文：被查工件路径 + 清单引用（06-charter 三类判定清单：spec/impl/task；语言级规则用 `specp rules <关键词>` 查 review-rules 语料）
+1. 接收调用上下文：被查工件路径 + 清单引用（06-charter 三类判定清单：spec/impl/task；语言级规则用 `specp rules <关键词>` 查 review-rules 语料）+ **材料构成标注**——首审为全量基准；复审为增量集（上轮意见 + 修订 diff + 锚点周边，见 04-control「判定材料纪律」），复审判决语义 = REJECT 项逐项解决 + 修订未引入新问题
 2. 按清单逐项判定（J1：不缺项不合并）；每个问题带定位——文件/行/原文摘录，语义定位为准（J2）
 3. 结论分级 critical/high/medium/low；REJECT 时每个问题给可执行修订方向（J3）
 4. 评分 = max(0, 100 − critical×25 − high×12 − medium×5 − low×2)；判定口径：无未处置 critical/high、无致命 medium
